@@ -7,10 +7,11 @@
 SUBDIRS	= System/src Apps
 PREFIX	?= /usr/local
 DEVNULL	= /dev/null
+CONFIGURE= ./Apps/Devel/src/configure/configure-git/src/configure
 
 
 all:
-	@if [ ! -x ./Apps/Devel/src/configure/src/configure ]; then \
+	@if [ ! -x "$(CONFIGURE)" ]; then \
 		$(MAKE) bootstrap; \
 	else \
 		$(MAKE) subdirs; \
@@ -28,7 +29,7 @@ clean:
 dist:
 	#XXX hack to bootstrap only configure
 	./build.sh -v -O MAKE="$(MAKE)" bootstrap < "$(DEVNULL)"
-	./Apps/Devel/src/configure/src/configure -v
+	$(CONFIGURE) -v
 	$(MAKE) dist
 
 distclean:
