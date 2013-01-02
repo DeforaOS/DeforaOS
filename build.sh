@@ -200,9 +200,13 @@ _bootstrap_configure()
 	CPPFLAGS="-I ../../../../../../System/src/libSystem/libSystem-git/include"
 	CFLAGSF="-W"
 	LDFLAGSF="../../../../../../System/src/libSystem/libSystem-git/src/libSystem.a"
+	SUBDIRS="Apps/Devel/src/configure"
+	TARGETS="patch"
+
+	_target $TARGETS					|| return 2
+	$DEBUG ./Apps/Devel/src/configure/configure-git/src/configure -v -p \
 	SUBDIRS="Apps/Devel/src/configure/configure-git/src"
 	TARGETS="clean all"
-
 	[ $# -eq 1 -a "$1" = "install" ] && TARGETS="install"
 	_target $TARGETS					|| return 2
 	$DEBUG ./Apps/Devel/src/configure/configure-git/src/configure -v -p \
@@ -253,6 +257,9 @@ _bootstrap_graphics()
 
 _bootstrap_libsystem()
 {
+	SUBDIRS="System/src/libSystem"
+
+	_target "patch"						|| return 2
 	SUBDIRS="System/src/libSystem/libSystem-git/src"
 	_target "clean" "libSystem.a"				|| return 2
 }
