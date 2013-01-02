@@ -197,9 +197,9 @@ _bootstrap_configure()
 	C="$CPPFLAGS"
 	CF="$CFLAGSF"
 	L="$LDFLAGSF"
-	CPPFLAGS="-I ../../../../../System/src/libSystem/libSystem-git/include"
+	CPPFLAGS="-I ../../../../../../System/src/libSystem/libSystem-git/include"
 	CFLAGSF="-W"
-	LDFLAGSF="../../../../../System/src/libSystem/libSystem-git/src/libSystem.a"
+	LDFLAGSF="../../../../../../System/src/libSystem/libSystem-git/src/libSystem.a"
 	SUBDIRS="Apps/Devel/src/configure/configure-git/src"
 	TARGETS="clean all"
 
