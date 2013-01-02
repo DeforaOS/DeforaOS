@@ -25,7 +25,8 @@ _target_download()
 			if [ ! -d "$PACKAGE-$VERSION/.git" ]; then
 				$GIT clone "$URL" "$PACKAGE-$VERSION"
 			else
-				(cd "$PACKAGE-$VERSION" && $GIT pull --rebase) || true
+				(cd "$PACKAGE-$VERSION" && $GIT pull --rebase) \
+								|| true
 			fi
 			;;
 		ftp://*|http://*|https://*)
@@ -60,13 +61,15 @@ _target_package()
 {
 	$RM -r "$DESTDIR"
 	_target_make DESTDIR="$DESTDIR" install &&
-	(cd "$DESTDIR" && $TAR -czf - "${PREFIX##/}") > "$PWD/$PACKAGE-$VERSION.pkg"
+	(cd "$DESTDIR" && $TAR -czf - "${PREFIX##/}") \
+		> "$PWD/$PACKAGE-$VERSION.pkg"
 }
 
 
 #target_patch
 _target_patch()
 {
+	:
 }
 
 
