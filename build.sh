@@ -163,7 +163,7 @@ target_bootstrap()
 	CONFIGURE=
 	DESTDIR=
 	#build libSystem and configure
-	_bootstrap_libsystem					|| return 2
+	_bootstrap_libsystem "libSystem.a"			|| return 2
 	_bootstrap_configure					|| return 2
 	#warn the user
 	echo
@@ -181,6 +181,8 @@ target_bootstrap()
 	FAILED=
 	PATH="$PATH:$PREFIX/bin"
 	PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
+	_bootstrap_libsystem "install"				|| return 2
+	_bootstrap_configure "install"				|| return 2
 	_bootstrap_system			|| FAILED="$FAILED System"
 	_bootstrap_network			|| FAILED="$FAILED Network"
 	_bootstrap_posix			|| FAILED="$FAILED POSIX"
@@ -204,7 +206,6 @@ _bootstrap_configure()
 	TARGETS="patch"
 
 	_target $TARGETS					|| return 2
-	$DEBUG ./Apps/Devel/src/configure/configure-git/src/configure -v -p \
 	SUBDIRS="Apps/Devel/src/configure/configure-git/src"
 	TARGETS="clean all"
 	[ $# -eq 1 -a "$1" = "install" ] && TARGETS="install"
@@ -261,7 +262,7 @@ _bootstrap_libsystem()
 
 	_target "patch"						|| return 2
 	SUBDIRS="System/src/libSystem/libSystem-git/src"
-	_target "clean" "libSystem.a"				|| return 2
+	_target "clean" "$@"					|| return 2
 }
 
 _bootstrap_network()
