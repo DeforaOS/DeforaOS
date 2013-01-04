@@ -1,6 +1,6 @@
 PACKAGE	= libSystem
 VERSION	= git
-TARGETS	= build download extract patch
+TARGETS	= build configure download extract patch
 PREFIX	= /usr/local
 DESTDIR	=
 RM	?= rm -f
@@ -12,8 +12,11 @@ INSTALL	?= install
 
 all: $(TARGETS)
 
-build: patch
+build: configure
 	../script.sh -P "$(PREFIX)" -- "build"
+
+configure: patch
+	../script.sh -P "$(PREFIX)" -- "configure"
 
 download:
 	../script.sh -O URL=git://github.com/DeforaOS/$(PACKAGE).git -P "$(PREFIX)" -- "download"
@@ -25,7 +28,7 @@ patch: extract
 	../script.sh -P "$(PREFIX)" -- "patch"
 
 clean:
-	$(RM) -- $(build_OBJS) $(download_OBJS) $(extract_OBJS) $(patch_OBJS)
+	$(RM) -- $(build_OBJS) $(configure_OBJS) $(download_OBJS) $(extract_OBJS) $(patch_OBJS)
 
 distclean: clean
 	$(RM) -- $(TARGETS)
