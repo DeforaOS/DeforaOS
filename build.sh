@@ -181,7 +181,6 @@ target_bootstrap()
 	FAILED=
 	PATH="$PATH:$PREFIX/bin"
 	PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
-	_bootstrap_libsystem "install"				|| return 2
 	_bootstrap_configure "install"				|| return 2
 	_bootstrap_system			|| FAILED="$FAILED System"
 	_bootstrap_network			|| FAILED="$FAILED Network"
