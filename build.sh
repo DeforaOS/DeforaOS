@@ -461,7 +461,7 @@ shift $((OPTIND - 1))
 [ -z "$SYSTEM" ] && SYSTEM=$(uname -s)
 [ -z "$TARGET" ] && TARGET="$SYSTEM-$MACHINE"
 [ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$TARGET"
-if [ ! -f "Apps/Devel/src/scripts/targets/$TARGET" ]; then
+if [ ! -f "Apps/Devel/src/scripts/scripts-git/targets/$TARGET" ]; then
 	case "$MACHINE" in
 		arm*b|arm*l)
 			MACHINE="arm"
@@ -480,10 +480,10 @@ if [ ! -f "Apps/Devel/src/scripts/targets/$TARGET" ]; then
 	esac
 	TARGET="$SYSTEM-$MACHINE"
 fi
-if [ ! -f "Apps/Devel/src/scripts/targets/$TARGET" ]; then
+if [ ! -f "Apps/Devel/src/scripts/scripts-git/targets/$TARGET" ]; then
 	_warning "$TARGET: Unsupported target" 1>&2
 else
-	. "Apps/Devel/src/scripts/targets/$TARGET"
+	. "Apps/Devel/src/scripts/scripts-git/targets/$TARGET"
 fi
 
 #initialize variables
