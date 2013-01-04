@@ -367,7 +367,7 @@ target_install()
 		SUBDIRS="$subdir"
 		case "$subdir" in
 			System/src/libApp)
-				SUBDIRS="$subdir/src"
+				SUBDIRS="$subdir/libApp-git/src"
 				LDFLAGS="$L -lc"
 				_target "install"		|| return 2
 				LDFLAGS="$L -lc $LIBGCC $D$P/lib/start.o"
@@ -379,8 +379,9 @@ target_install()
 				_target "install"		|| return 2
 				;;
 			System/src/libSystem)
-				SUBDIRS="$subdir/src $subdir/include \
-						$subdir/data"
+				SUBDIRS="$subdir/libSystem-git/src \
+						$subdir/libSystem-git/include \
+						$subdir/libSystem-git/data"
 				LDFLAGS="$L -lc"
 				_target "install"		|| return 2
 				;;
