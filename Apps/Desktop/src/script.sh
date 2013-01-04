@@ -7,6 +7,7 @@ DESTDIR="$PWD/destdir"
 EXT=".tar.gz"
 PREFIX="/usr/local"
 #executables
+CONFIGURE='configure -v'
 FETCH='wget'
 GIT='git'
 MAKE='make'
@@ -17,6 +18,17 @@ TAR='tar'
 
 
 #functions
+#target_configure
+_target_configure()
+{
+	if [ -f "$PACKAGE-$VERSION/configure" ]; then
+		(cd "$PACKAGE-$VERSION" && ./configure)
+	elif [ -f "$PACKAGE-$VERSION/project.conf" ]; then
+		(cd "$PACKAGE-$VERSION" && $CONFIGURE)
+	fi
+}
+
+
 #target_download
 _target_download()
 {
@@ -123,7 +135,7 @@ case "$1" in
 			_target_make all
 		fi
 		;;
-	download|extract|patch)
+	configure|download|extract|patch)
 		"_target_$1"
 		;;
 	package)
