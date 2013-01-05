@@ -24,7 +24,7 @@ _target_configure()
 	if [ -f "$PACKAGE-$VERSION/configure" ]; then
 		(cd "$PACKAGE-$VERSION" && ./configure)
 	elif [ -f "$PACKAGE-$VERSION/project.conf" ]; then
-		(cd "$PACKAGE-$VERSION" && $CONFIGURE)
+		(cd "$PACKAGE-$VERSION" && $CONFIGURE -p "$PREFIX")
 	fi
 }
 
