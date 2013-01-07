@@ -3,11 +3,11 @@ VERSION	= git
 TARGETS	= build configure download extract patch
 PREFIX	= /usr/local
 DESTDIR	=
-RM	?= rm -f
-LN	?= ln -f
-TAR	?= tar -czvf
-MKDIR	?= mkdir -p
-INSTALL	?= install
+RM	= rm -f
+LN	= ln -f
+TAR	= tar -czvf
+MKDIR	= mkdir -p
+INSTALL	= install
 
 
 all: $(TARGETS)
