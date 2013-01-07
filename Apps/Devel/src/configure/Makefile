@@ -29,6 +29,7 @@ patch: extract
 
 clean:
 	$(RM) -- $(build_OBJS) $(configure_OBJS) $(download_OBJS) $(extract_OBJS) $(patch_OBJS)
+	../script.sh -c -P "$(PREFIX)" -- "patch"
 
 distclean: clean
 	$(RM) -- $(TARGETS)
