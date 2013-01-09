@@ -159,7 +159,10 @@ while [ $# -ne 0 ]; do
 	target="$1"
 	shift
 
-	[ $clean -ne 0 ] && target="clean"
+	if [ $clean -ne 0 ]; then
+		target="clean"
+		[ ! -d "$PACKAGE-$VERSION" ] && continue
+	fi
 	case "$target" in
 		all|clean|distclean|install|uninstall)
 			_target_make "$target"
