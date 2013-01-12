@@ -243,12 +243,13 @@ _bootstrap_desktop()
 _bootstrap_devel()
 {
 	RET=0
-	S="Apps/Devel/src/cpp"
-	#FIXME we can't install cpp because of conflicts with the system
+	S="Apps/Devel/src/cpp \
+		Apps/Devel/src/strace"
+	#FIXME we can't install cpp because of potential conflicts
 	#	Apps/Devel/src/asm \
-	#	Apps/Devel/src/c99 \
-	#	Apps/Devel/src/strace"
+	#	Apps/Devel/src/c99"
 
+	#build all development applications
 	for i in $S; do
 		SUBDIRS="$i"
 		_target "clean all"				|| RET=$?
@@ -260,6 +261,7 @@ _bootstrap_graphics()
 {
 	SUBDIRS="Apps/Graphics/src"
 
+	#build all graphics applications
 	_target "clean all"
 }
 
@@ -274,8 +276,9 @@ _bootstrap_libsystem()
 
 _bootstrap_network()
 {
-	#build all network applications
 	SUBDIRS="Apps/Network/src"
+
+	#build all network applications
 	_target "clean all"					|| return 2
 }
 
