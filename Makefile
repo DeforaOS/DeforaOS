@@ -5,7 +5,7 @@
 
 
 SUBDIRS	= System/src Apps
-PREFIX	?= /usr/local
+PREFIX	= /usr/local
 DEVNULL	= /dev/null
 CONFIGURE= ./Apps/Devel/src/configure/configure-git/src/configure
 
