@@ -4,7 +4,7 @@
 
 
 
-SUBDIRS	= System/src Apps
+SUBDIRS	= System/src Apps Library
 PREFIX	= /usr/local
 DEVNULL	= /dev/null
 CONFIGURE= ./Apps/Devel/src/configure/configure-git/src/configure
