@@ -32,7 +32,8 @@ PREFIX="/usr/local"
 CONFIGURE='configure -v'
 FETCH='wget'
 GIT='git'
-MAKE='make'
+[ -n "$_" ] && MAKE="$_"
+[ -n "$MAKE" ] || MAKE="make"
 RM='rm -f'
 TAR='tar'
 
