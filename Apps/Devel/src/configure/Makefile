@@ -6,7 +6,7 @@ DESTDIR	=
 RM	= rm -f
 LN	= ln -f
 TAR	= tar -czvf
-MKDIR	= mkdir -p
+MKDIR	= mkdir -m 0755 -p
 INSTALL	= install
 
 
