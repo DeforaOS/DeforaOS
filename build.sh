@@ -182,13 +182,14 @@ target_bootstrap()
 	PATH="$PATH:$PREFIX/bin"
 	PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
 	_bootstrap_configure "install"				|| return 2
-	_bootstrap_system			|| FAILED="$FAILED System"
-	_bootstrap_devel			|| FAILED="$FAILED Devel"
-	_bootstrap_database			|| FAILED="$FAILED Database"
-	_bootstrap_graphics			|| FAILED="$FAILED Graphics"
-	_bootstrap_desktop			|| FAILED="$FAILED Desktop"
-	_bootstrap_network			|| FAILED="$FAILED Network"
-	_bootstrap_posix			|| FAILED="$FAILED POSIX"
+	_bootstrap_system		|| FAILED="$FAILED System"
+	_bootstrap_devel		|| FAILED="$FAILED Devel"
+	_bootstrap_database		|| FAILED="$FAILED Database"
+	_bootstrap_graphics		|| FAILED="$FAILED Graphics"
+	_bootstrap_desktop		|| FAILED="$FAILED Desktop"
+	_bootstrap_network		|| FAILED="$FAILED Network"
+	_bootstrap_posix		|| FAILED="$FAILED POSIX"
+	_bootstrap_documentation	|| FAILED="$FAILED Documentation"
 	[ -z "$FAILED" ]					&& return 0
 	echo "Failed to build:$FAILED" 1>&2
 	return 2
@@ -211,7 +212,7 @@ _bootstrap_configure()
 	[ $# -eq 1 -a "$1" = "install" ] && TARGETS="install"
 	_target $TARGETS					|| return 2
 	$DEBUG ./Apps/Devel/src/configure/configure-git/src/configure -v -p \
-		"$PREFIX" "System/src" "Apps"			|| return 2
+		"$PREFIX" "System/src" "Apps" "Library"		|| return 2
 	CPPFLAGS="$C"
 	CFLAGSF="$CF"
 	LDFLAGSF="$L"
@@ -255,6 +256,14 @@ _bootstrap_devel()
 		_target "clean all"				|| RET=$?
 	done
 	return $RET
+}
+
+_bootstrap_documentation()
+{
+	SUBDIRS="Library/Documentation/src"
+
+	#build the documentation
+	_target "clean all"					|| return 2
 }
 
 _bootstrap_graphics()
