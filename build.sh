@@ -220,9 +220,9 @@ _bootstrap_configure()
 
 _bootstrap_database()
 {
-	#build all database applications
-	SUBDIRS="Apps/Database/src"
-	_target "clean all"					|| return 2
+	#bootstrap libDatabase
+	SUBDIRS="Apps/Database/src/libDatabase"
+	_target "clean install"					|| return 2
 }
 
 _bootstrap_desktop()
@@ -231,11 +231,7 @@ _bootstrap_desktop()
 
 	#bootstrap libDesktop
 	SUBDIRS="Apps/Desktop/src/libDesktop"
-	if ! _target "clean" "install"; then
-		RET=$?
-		FAILED="$FAILED Desktop"
-		return $RET
-	fi
+	_target "clean install"					|| return 2
 	#build all desktop applications
 	SUBDIRS="Apps/Desktop/src"
 	_target "clean all"					|| return 2
@@ -280,7 +276,7 @@ _bootstrap_libsystem()
 
 	_target "patch"						|| return 2
 	SUBDIRS="System/src/libSystem/libSystem-git/src"
-	_target "clean" "$@"					|| return 2
+	_target "clean $@"					|| return 2
 }
 
 _bootstrap_network()
@@ -317,7 +313,7 @@ _bootstrap_system()
 
 	#bootstrap libSystem, libApp and libParser
 	SUBDIRS="System/src/libSystem System/src/libApp System/src/libParser"
-	_target "clean" "install"				|| return 2
+	_target "clean install"					|| return 2
 	#build the other system applications
 	for i in $S; do
 		SUBDIRS="$i"
