@@ -222,7 +222,7 @@ _bootstrap_database()
 {
 	#bootstrap libDatabase
 	SUBDIRS="Apps/Database/src/libDatabase"
-	_target "clean install"					|| return 2
+	_target "clean" "install"				|| return 2
 }
 
 _bootstrap_desktop()
@@ -231,10 +231,10 @@ _bootstrap_desktop()
 
 	#bootstrap libDesktop
 	SUBDIRS="Apps/Desktop/src/libDesktop"
-	_target "clean install"					|| return 2
+	_target "clean" "install"				|| return 2
 	#build all desktop applications
 	SUBDIRS="Apps/Desktop/src"
-	_target "clean all"					|| return 2
+	_target "clean" "all"					|| return 2
 }
 
 _bootstrap_devel()
@@ -249,7 +249,7 @@ _bootstrap_devel()
 	#build all development applications
 	for i in $S; do
 		SUBDIRS="$i"
-		_target "clean all"				|| RET=$?
+		_target "clean" "all"				|| RET=$?
 	done
 	return $RET
 }
@@ -259,7 +259,7 @@ _bootstrap_documentation()
 	SUBDIRS="Library/Documentation/src"
 
 	#build the documentation
-	_target "clean all"					|| return 2
+	_target "clean" "all"					|| return 2
 }
 
 _bootstrap_graphics()
@@ -267,7 +267,7 @@ _bootstrap_graphics()
 	SUBDIRS="Apps/Graphics/src"
 
 	#build all graphics applications
-	_target "clean all"
+	_target "clean" "all"
 }
 
 _bootstrap_libsystem()
@@ -276,7 +276,7 @@ _bootstrap_libsystem()
 
 	_target "patch"						|| return 2
 	SUBDIRS="System/src/libSystem/libSystem-git/src"
-	_target "clean $@"					|| return 2
+	_target "clean" "$@"					|| return 2
 }
 
 _bootstrap_network()
@@ -284,7 +284,7 @@ _bootstrap_network()
 	SUBDIRS="Apps/Network/src"
 
 	#build all network applications
-	_target "clean all"					|| return 2
+	_target "clean" "all"					|| return 2
 }
 
 _bootstrap_posix()
@@ -299,7 +299,7 @@ _bootstrap_posix()
 
 	for i in $S; do
 		SUBDIRS="$i"
-		_target "clean all"				|| RET=$?
+		_target "clean" "all"				|| RET=$?
 	done
 	return $RET
 }
@@ -313,11 +313,11 @@ _bootstrap_system()
 
 	#bootstrap libSystem, libApp and libParser
 	SUBDIRS="System/src/libSystem System/src/libApp System/src/libParser"
-	_target "clean install"					|| return 2
+	_target "clean" "install"				|| return 2
 	#build the other system applications
 	for i in $S; do
 		SUBDIRS="$i"
-		_target "clean all"				|| RET=$?
+		_target "clean" "all"				|| RET=$?
 	done
 	return $RET
 }
