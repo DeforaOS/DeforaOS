@@ -379,9 +379,9 @@ target_install()
 		case "$subdir" in
 			System/src/libApp)
 				SUBDIRS="$subdir/libApp-git/src"
-				LDFLAGS="$L -lc"
+				LDFLAGS="$L -lc -lsocket"
 				_target "install"		|| return 2
-				LDFLAGS="$L -lc $LIBGCC $D$P/lib/start.o"
+				LDFLAGS="$L -lc -lsocket $LIBGCC $D$P/lib/start.o"
 				SUBDIRS="$subdir"
 				_target "install"		|| return 2
 				;;
