@@ -32,12 +32,9 @@ PREFIX="/usr/local"
 CONFIGURE='configure -v'
 FETCH='wget'
 GIT='git'
-[ -n "$_" ] && MAKE="$_"
 [ -n "$MAKE" ] || MAKE="make"
 RM='rm -f'
 TAR='tar'
-
-. ./config.sh
 
 
 #functions
@@ -124,6 +121,12 @@ _usage()
 
 
 #main
+if [ ! -f ./config.sh ]; then
+	echo "script.sh: Must be called from a project folder (config.sh not found)" 1>&2
+	exit 2
+fi
+. ./config.sh
+
 clean=0
 install=0
 uninstall=0
