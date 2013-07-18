@@ -29,7 +29,7 @@ DESTDIR="$PWD/destdir"
 EXT=".tar.gz"
 PREFIX="/usr/local"
 #executables
-CONFIGURE='configure -v'
+[ -z "$CONFIGURE" ] && CONFIGURE='configure -v'
 FETCH='wget'
 GIT='git'
 [ -n "$MAKE" ] || MAKE="make"

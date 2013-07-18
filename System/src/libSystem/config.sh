@@ -1,5 +1,5 @@
 PACKAGE="libSystem"
 VERSION="git"
 
-PREFIX="/usr/local"
+PREFIX="/usr"
 LIBDIR="${PREFIX}/lib"
