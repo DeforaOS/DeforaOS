@@ -57,7 +57,7 @@ _target_download()
 			if [ ! -d "$PACKAGE-$VERSION/.git" ]; then
 				$GIT clone "$URL" "$PACKAGE-$VERSION"
 			else
-				(cd "$PACKAGE-$VERSION" && $GIT pull) || true
+				(cd "$PACKAGE-$VERSION" && $GIT pull -v) || true
 			fi
 			;;
 		ftp://*|http://*|https://*)
