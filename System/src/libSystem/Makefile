@@ -1,7 +1,7 @@
 PACKAGE	= libSystem
 VERSION	= git
 TARGETS	= build configure download extract patch
-PREFIX	= /usr
+PREFIX	= /usr/local
 DESTDIR	=
 RM	= rm -f
 LN	= ln -f
