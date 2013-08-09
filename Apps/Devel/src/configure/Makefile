@@ -19,7 +19,7 @@ configure: patch
 	../script.sh -P "$(PREFIX)" -- "configure"
 
 download:
-	../script.sh -O URL=http://git.defora.org/git/$(PACKAGE).git -P "$(PREFIX)" -- "download"
+	../script.sh -O URL=http://git.defora.org/DeforaOS/$(PACKAGE).git -P "$(PREFIX)" -- "download"
 
 extract: download
 	../script.sh -P "$(PREFIX)" -- "extract"
