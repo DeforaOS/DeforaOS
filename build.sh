@@ -45,6 +45,7 @@ VERBOSE=0
 #executables
 CAT="cat"
 CC=
+CHMOD="chmod"
 CHOWN="chown"
 CONFIGURE=
 DD="dd bs=1024"
