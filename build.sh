@@ -62,17 +62,17 @@ RMDIR="rmdir -p"
 #internals
 DEVNULL="/dev/null"
 DEVZERO="/dev/zero"
-SUBDIRS="System/src/libc \
-	System/src/libSystem \
-	System/src/libApp \
-	System/src/Loader \
-	System/src/Init \
-	System/src/Splasher \
-	System/src/VFS \
-	Apps/Unix/src/sh \
-	Apps/Unix/src/utils \
-	Apps/Unix/src/devel \
-	Apps/Unix/src/others \
+SUBDIRS="System/src/libc
+	System/src/libSystem
+	System/src/libApp
+	System/src/Loader
+	System/src/Init
+	System/src/Splasher
+	System/src/VFS
+	Apps/Unix/src/sh
+	Apps/Unix/src/utils
+	Apps/Unix/src/devel
+	Apps/Unix/src/others
 	Apps/Servers/src/inetd"
 
 
@@ -235,6 +235,7 @@ _bootstrap_desktop()
 	SUBDIRS="Apps/Desktop/src/libDesktop"
 	_target "clean" "install"				|| return 2
 	#build all desktop applications
+	#FIXME some desktop applications depend on others being installed
 	SUBDIRS="Apps/Desktop/src"
 	_target "clean" "all"					|| return 2
 }
@@ -242,10 +243,10 @@ _bootstrap_desktop()
 _bootstrap_devel()
 {
 	RET=0
-	S="Apps/Devel/src/cpp \
+	S="Apps/Devel/src/cpp
 		Apps/Devel/src/strace"
 	#FIXME we can't install cpp because of potential conflicts
-	#	Apps/Devel/src/asm \
+	#	Apps/Devel/src/asm
 	#	Apps/Devel/src/c99"
 
 	#build all development applications
@@ -292,11 +293,11 @@ _bootstrap_network()
 _bootstrap_posix()
 {
 	RET=0
-	S="System/src/libc \
-		Apps/Unix/src/sh \
-		Apps/Unix/src/utils \
-		Apps/Unix/src/devel \
-		Apps/Unix/src/others \
+	S="System/src/libc
+		Apps/Unix/src/sh
+		Apps/Unix/src/utils
+		Apps/Unix/src/devel
+		Apps/Unix/src/others
 		Apps/Servers/src/inetd"
 
 	for i in $S; do
@@ -309,8 +310,8 @@ _bootstrap_posix()
 _bootstrap_system()
 {
 	RET=0
-	S="System/src/Init \
-		System/src/Splasher \
+	S="System/src/Init
+		System/src/Splasher
 		System/src/VFS"
 
 	#bootstrap libSystem, libApp and libParser
@@ -380,8 +381,8 @@ target_install()
 		SUBDIRS="$subdir"
 		case "$subdir" in
 			System/src/libApp)
-				SUBDIRS="$subdir/libApp-git/src \
-						$subdir/libApp-git/include \
+				SUBDIRS="$subdir/libApp-git/src
+						$subdir/libApp-git/include
 						$subdir/libApp-git/data"
 				LDFLAGS="$L -lc -lsocket"
 				_target "install"		|| return 2
@@ -391,8 +392,8 @@ target_install()
 				_target "install"		|| return 2
 				;;
 			System/src/libSystem)
-				SUBDIRS="$subdir/libSystem-git/src \
-						$subdir/libSystem-git/include \
+				SUBDIRS="$subdir/libSystem-git/src
+						$subdir/libSystem-git/include
 						$subdir/libSystem-git/data"
 				LDFLAGS="$L -lc"
 				_target "install"		|| return 2
