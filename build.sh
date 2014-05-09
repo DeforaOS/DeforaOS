@@ -384,7 +384,8 @@ target_install()
 			System/src/libApp)
 				SUBDIRS="$subdir/libApp-git/src
 						$subdir/libApp-git/include
-						$subdir/libApp-git/data"
+						$subdir/libApp-git/data
+						$subdir/libApp-git/tools"
 				LDFLAGS="$L -lc -lsocket"
 				_target "install"		|| return 2
 				;;
@@ -395,7 +396,8 @@ target_install()
 			System/src/libSystem)
 				SUBDIRS="$subdir/libSystem-git/src
 						$subdir/libSystem-git/include
-						$subdir/libSystem-git/data"
+						$subdir/libSystem-git/data
+						$subdir/libSystem-git/tools"
 				LDFLAGS="$L -lc"
 				_target "install"		|| return 2
 				;;
