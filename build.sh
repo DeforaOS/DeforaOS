@@ -73,7 +73,8 @@ SUBDIRS="System/src/libc
 	Apps/Unix/src/utils
 	Apps/Unix/src/devel
 	Apps/Unix/src/others
-	Apps/Servers/src/inetd"
+	Apps/Servers/src/inetd
+	Apps/Network/src/VPN"
 
 
 #functions
