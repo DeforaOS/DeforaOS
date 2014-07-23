@@ -74,7 +74,8 @@ SUBDIRS="System/src/libc
 	Apps/Unix/src/devel
 	Apps/Unix/src/others
 	Apps/Servers/src/inetd
-	Apps/Network/src/VPN"
+	Apps/Network/src/VPN
+	Apps/Devel/src/configure"
 
 
 #functions
