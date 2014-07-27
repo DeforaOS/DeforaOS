@@ -245,11 +245,11 @@ _bootstrap_desktop()
 _bootstrap_devel()
 {
 	RET=0
-	S="Apps/Devel/src/cpp
+	S="Apps/Devel/src/CPP
 		Apps/Devel/src/strace"
-	#FIXME we can't install cpp because of potential conflicts
-	#	Apps/Devel/src/asm
-	#	Apps/Devel/src/c99"
+	#FIXME we can't install CPP because of potential conflicts
+	#	Apps/Devel/src/Asm
+	#	Apps/Devel/src/C99"
 
 	#build all development applications
 	for i in $S; do
