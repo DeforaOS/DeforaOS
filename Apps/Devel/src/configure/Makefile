@@ -29,6 +29,10 @@ patch: extract
 
 clean:
 	$(RM) -- $(build_OBJS) $(configure_OBJS) $(download_OBJS) $(extract_OBJS) $(patch_OBJS)
+	../script.sh -c -P "$(PREFIX)" -- "build"
+	../script.sh -c -P "$(PREFIX)" -- "configure"
+	../script.sh -O URL=http://git.defora.org/DeforaOS/$(PACKAGE).git -c -P "$(PREFIX)" -- "download"
+	../script.sh -c -P "$(PREFIX)" -- "extract"
 	../script.sh -c -P "$(PREFIX)" -- "patch"
 
 distclean: clean
