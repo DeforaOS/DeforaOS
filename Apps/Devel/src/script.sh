@@ -113,8 +113,10 @@ _usage()
 	echo "  configure" 1>&2
 	echo "  download" 1>&2
 	echo "  extract" 1>&2
+	echo "  install" 1>&2
 	echo "  package" 1>&2
 	echo "  patch" 1>&2
+	echo "  uninstall" 1>&2
 	return 1
 }
 
