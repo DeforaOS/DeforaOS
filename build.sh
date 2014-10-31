@@ -37,6 +37,7 @@ PKG_CONFIG_LIBDIR=
 PKG_CONFIG_PATH=
 PKG_CONFIG_SYSROOT_DIR=
 PREFIX=
+PROGNAME="build.sh"
 SYSTEM=
 TARGET=
 VENDOR="DeforaOS"
@@ -108,7 +109,7 @@ _debug()
 #error
 error()
 {
-	echo "build.sh: error: $@" 1>&2
+	echo "$PROGNAME: error: $@" 1>&2
 	exit 2
 }
 
@@ -116,7 +117,7 @@ error()
 #info
 _info()
 {
-	[ "$VERBOSE" -ne 0 ] && echo "build.sh: $@" 1>&2
+	[ "$VERBOSE" -ne 0 ] && echo "$PROGNAME: $@" 1>&2
 	return 0
 }
 
@@ -429,7 +430,7 @@ target_uninstall()
 #usage
 _usage()
 {
-	echo "Usage: build.sh [-Dv][-O option=value...] target..." 1>&2
+	echo "Usage: $PROGNAME [-Dv][-O option=value...] target..." 1>&2
 	echo "  -D	Run in debugging mode" 1>&2
 	echo "  -v	Verbose mode" 1>&2
 	echo "Targets:" 1>&2
@@ -451,7 +452,7 @@ _usage()
 #warning
 _warning()
 {
-	echo "build.sh: warning: $@" 1>&2
+	echo "$PROGNAME: warning: $@" 1>&2
 	return 2
 }
 
