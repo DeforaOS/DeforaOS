@@ -525,7 +525,7 @@ fi
 [ -z "$LDFLAGS" ] && LDFLAGS="-nostdlib -L$DESTDIR$PREFIX/lib -Wl,-rpath-link,$DESTDIR$PREFIX/lib -Wl,-rpath,$PREFIX/lib"
 [ -z "$LIBGCC" -a -n "$CC" ] && LIBGCC=$($CC -print-libgcc-file-name)
 [ -z "$LIBGCC" ] && LIBGCC=$(cc -print-libgcc-file-name)
-[ -z "$UID" ] && UID=`id -u`
+[ -z "$UID" ] && UID=$(id -u)
 [ -z "$SUDO" -a "$UID" -ne 0 ] && SUDO="sudo"
 
 #run targets
