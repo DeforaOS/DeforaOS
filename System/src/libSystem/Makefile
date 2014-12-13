@@ -1,11 +1,12 @@
 PACKAGE	= libSystem
 VERSION	= git
 TARGETS	= build configure download extract patch
+OBJDIR	=
 PREFIX	= /usr/local
 DESTDIR	=
 RM	= rm -f
 LN	= ln -f
-TAR	= tar -czvf
+TAR	= tar
 MKDIR	= mkdir -m 0755 -p
 INSTALL	= install
 
@@ -39,13 +40,24 @@ distclean: clean
 	$(RM) -- $(TARGETS)
 
 dist:
-	$(RM) -r -- $(PACKAGE)-$(VERSION)
-	$(LN) -s -- . $(PACKAGE)-$(VERSION)
-	@$(TAR) $(PACKAGE)-$(VERSION).tar.gz -- \
+	$(RM) -r -- $(OBJDIR)$(PACKAGE)-$(VERSION)
+	$(LN) -s -- "$$PWD" $(OBJDIR)$(PACKAGE)-$(VERSION)
+	@cd $(OBJDIR). && $(TAR) -czvf $(OBJDIR)$(PACKAGE)-$(VERSION).tar.gz -- \
 		$(PACKAGE)-$(VERSION)/Makefile \
 		$(PACKAGE)-$(VERSION)/config.sh \
 		$(PACKAGE)-$(VERSION)/project.conf
-	$(RM) -- $(PACKAGE)-$(VERSION)
+	$(RM) -- $(OBJDIR)$(PACKAGE)-$(VERSION)
+
+distcheck: dist
+	$(TAR) -xzvf $(OBJDIR)$(PACKAGE)-$(VERSION).tar.gz
+	$(MKDIR) -- $(PACKAGE)-$(VERSION)/objdir
+	$(MKDIR) -- $(PACKAGE)-$(VERSION)/destdir
+	(cd "$(PACKAGE)-$(VERSION)" && $(MAKE) OBJDIR="$$PWD/objdir/")
+	(cd "$(PACKAGE)-$(VERSION)" && $(MAKE) OBJDIR="$$PWD/objdir/" DESTDIR="$$PWD/destdir" install)
+	(cd "$(PACKAGE)-$(VERSION)" && $(MAKE) OBJDIR="$$PWD/objdir/" DESTDIR="$$PWD/destdir" uninstall)
+	(cd "$(PACKAGE)-$(VERSION)" && $(MAKE) OBJDIR="$$PWD/objdir/" distclean)
+	(cd "$(PACKAGE)-$(VERSION)" && $(MAKE) dist)
+	$(RM) -r -- $(PACKAGE)-$(VERSION)
 
 install: $(TARGETS)
 	../script.sh -P "$(DESTDIR)$(PREFIX)" -i -- "build"
@@ -53,4 +65,4 @@ install: $(TARGETS)
 uninstall:
 	../script.sh -P "$(DESTDIR)$(PREFIX)" -u -- "build"
 
-.PHONY: all clean distclean dist install uninstall
+.PHONY: all clean distclean dist distcheck install uninstall build configure download extract patch
