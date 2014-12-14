@@ -92,8 +92,9 @@ check()
 		[ -z "$VAR" ] && EMPTY="$EMPTY $i"
 	done
 	[ -z "$EMPTY" ] && return
-	USAGE=`echo -e "$USAGE\n\nError:$EMPTY need to be set"`
-	_usage "$USAGE"
+	_usage "$USAGE
+
+Error:$EMPTY need to be set"
 	exit $?
 }
 
