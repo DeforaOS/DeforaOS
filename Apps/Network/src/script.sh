@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2012-2013 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2012-2015 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,9 @@
 #variables
 DESTDIR="$PWD/destdir"
 EXT=".tar.gz"
+GIT_BRANCH="master"
 PREFIX="/usr/local"
+PROGNAME="script.sh"
 #executables
 [ -z "$CONFIGURE" ] && CONFIGURE='configure -v'
 FETCH='wget'
@@ -55,12 +57,10 @@ _target_download()
 	case "$URL" in
 		git://*|http://*.git|https://*.git|*.git)
 			if [ ! -d "$PACKAGE-$VERSION/.git" ]; then
-				$GIT clone "$URL" "$PACKAGE-$VERSION"
-			else
-				(cd "$PACKAGE-$VERSION" && $GIT pull -v) || true
+				$GIT clone -n "$URL" "$PACKAGE-$VERSION"
 			fi
 			;;
-		ftp://*|http://*|https://*)
+		ftp://*|ftps://*|http://*|https://*)
 			[ ! -f "$PACKAGE-$VERSION$EXT" ] && $FETCH "$URL"
 			;;
 	esac
@@ -70,10 +70,13 @@ _target_download()
 #target_extract
 _target_extract()
 {
-	case "$URL" in
-		git://*)
+	case "$VERSION" in
+		git)
+			(cd "$PACKAGE-$VERSION" && $GIT checkout "$GIT_BRANCH")
 			;;
-		http://*)
+	esac
+	case "$URL" in
+		ftp://*|ftps://*|http://*|https://*)
 			$TAR -xzf "$PACKAGE-$VERSION$EXT"
 			;;
 	esac
@@ -107,7 +110,7 @@ _target_patch()
 #usage
 _usage()
 {
-	echo "Usage: script.sh [-c|-i|-u][-O name=value...][-P prefix] target..." 1>&2
+	echo "Usage: $PROGNAME [-c|-i|-u][-O name=value...][-P prefix] target..." 1>&2
 	echo "Available targets:" 1>&2
 	echo "  build" 1>&2
 	echo "  configure" 1>&2
@@ -123,7 +126,7 @@ _usage()
 
 #main
 if [ ! -f ./config.sh ]; then
-	echo "script.sh: Must be called from a project folder (config.sh not found)" 1>&2
+	echo "$PROGNAME: Must be called from a project folder (config.sh not found)" 1>&2
 	exit 2
 fi
 . ./config.sh
