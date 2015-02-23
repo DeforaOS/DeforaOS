@@ -27,6 +27,7 @@
 #variables
 DESTDIR="$PWD/destdir"
 EXT=".tar.gz"
+GIT_BRANCH="master"
 PREFIX="/usr/local"
 #executables
 [ -z "$CONFIGURE" ] && CONFIGURE='configure -v'
@@ -55,9 +56,7 @@ _target_download()
 	case "$URL" in
 		git://*|http://*.git|https://*.git|*.git)
 			if [ ! -d "$PACKAGE-$VERSION/.git" ]; then
-				$GIT clone "$URL" "$PACKAGE-$VERSION"
-			else
-				(cd "$PACKAGE-$VERSION" && $GIT pull -v) || true
+				$GIT clone -n "$URL" "$PACKAGE-$VERSION"
 			fi
 			;;
 		ftp://*|http://*|https://*)
@@ -71,7 +70,8 @@ _target_download()
 _target_extract()
 {
 	case "$URL" in
-		git://*)
+		git://*|http://*.git|https://*.git|*.git)
+			(cd "$PACKAGE-$VERSION" && $GIT checkout "$GIT_BRANCH")
 			;;
 		http://*)
 			$TAR -xzf "$PACKAGE-$VERSION$EXT"
