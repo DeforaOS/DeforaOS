@@ -29,6 +29,7 @@ DESTDIR="$PWD/destdir"
 EXT=".tar.gz"
 GIT_BRANCH="master"
 PREFIX="/usr/local"
+PROGNAME="script.sh"
 #executables
 [ -z "$CONFIGURE" ] && CONFIGURE='configure -v'
 FETCH='wget'
@@ -107,7 +108,7 @@ _target_patch()
 #usage
 _usage()
 {
-	echo "Usage: script.sh [-c|-i|-u][-O name=value...][-P prefix] target..." 1>&2
+	echo "Usage: $PROGNAME [-c|-i|-u][-O name=value...][-P prefix] target..." 1>&2
 	echo "Available targets:" 1>&2
 	echo "  build" 1>&2
 	echo "  configure" 1>&2
@@ -123,7 +124,7 @@ _usage()
 
 #main
 if [ ! -f ./config.sh ]; then
-	echo "script.sh: Must be called from a project folder (config.sh not found)" 1>&2
+	echo "$PROGNAME: Must be called from a project folder (config.sh not found)" 1>&2
 	exit 2
 fi
 . ./config.sh
