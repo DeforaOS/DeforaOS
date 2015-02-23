@@ -485,6 +485,10 @@ shift $((OPTIND - 1))
 [ -z "$SYSTEM" ] && SYSTEM=$(uname -s)
 [ -z "$TARGET" ] && TARGET="$SYSTEM-$MACHINE"
 [ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$TARGET"
+if [ ! -d "Apps/Devel/src/scripts/scripts-git" ]; then
+	(cd "Apps/Devel/src/scripts" && $MAKE download)
+	[ $? -eq 0 ]						|| exit 2
+fi
 if [ ! -f "Apps/Devel/src/scripts/scripts-git/targets/$TARGET" ]; then
 	case "$MACHINE" in
 		arm*b|arm*l)
