@@ -60,7 +60,7 @@ _target_download()
 				$GIT clone -n "$URL" "$PACKAGE-$VERSION"
 			fi
 			;;
-		ftp://*|http://*|https://*)
+		ftp://*|ftps://*|http://*|https://*)
 			[ ! -f "$PACKAGE-$VERSION$EXT" ] && $FETCH "$URL"
 			;;
 	esac
@@ -70,11 +70,13 @@ _target_download()
 #target_extract
 _target_extract()
 {
-	case "$URL" in
-		git://*|http://*.git|https://*.git|*.git)
+	case "$VERSION" in
+		git)
 			(cd "$PACKAGE-$VERSION" && $GIT checkout "$GIT_BRANCH")
 			;;
-		http://*)
+	esac
+	case "$URL" in
+		ftp://*|ftps://*|http://*|https://*)
 			$TAR -xzf "$PACKAGE-$VERSION$EXT"
 			;;
 	esac
