@@ -23,7 +23,7 @@ download:
 	../script.sh -O URL=http://git.defora.org/DeforaOS/$(PACKAGE).git -P "$(PREFIX)" -- "download"
 
 extract: download
-	../script.sh -P "$(PREFIX)" -- "extract"
+	../script.sh -O URL=http://git.defora.org/DeforaOS/$(PACKAGE).git -P "$(PREFIX)" -- "extract"
 
 patch: extract
 	../script.sh -P "$(PREFIX)" -- "patch"
@@ -33,7 +33,7 @@ clean:
 	../script.sh -c -P "$(PREFIX)" -- "build"
 	../script.sh -c -P "$(PREFIX)" -- "configure"
 	../script.sh -O URL=http://git.defora.org/DeforaOS/$(PACKAGE).git -c -P "$(PREFIX)" -- "download"
-	../script.sh -c -P "$(PREFIX)" -- "extract"
+	../script.sh -O URL=http://git.defora.org/DeforaOS/$(PACKAGE).git -c -P "$(PREFIX)" -- "extract"
 	../script.sh -c -P "$(PREFIX)" -- "patch"
 
 distclean: clean
