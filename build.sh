@@ -111,7 +111,7 @@ _debug()
 _error()
 {
 	echo "$PROGNAME: error: $@" 1>&2
-	exit 2
+	return 2
 }
 
 
@@ -487,7 +487,10 @@ shift $((OPTIND - 1))
 [ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$TARGET"
 if [ ! -d "Apps/Devel/src/scripts/scripts-git" ]; then
 	(cd "Apps/Devel/src/scripts" && $MAKE download)
-	[ $? -eq 0 ] || _error "Could not download the development scripts"
+	if [ $? -eq 0 ]; then
+		_error "Could not download the development scripts"
+		exit $?
+	fi
 fi
 if [ ! -f "Apps/Devel/src/scripts/scripts-git/targets/$TARGET" ]; then
 	case "$MACHINE" in
