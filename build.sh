@@ -108,7 +108,7 @@ _debug()
 
 
 #error
-error()
+_error()
 {
 	echo "$PROGNAME: error: $@" 1>&2
 	exit 2
@@ -487,7 +487,7 @@ shift $((OPTIND - 1))
 [ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$TARGET"
 if [ ! -d "Apps/Devel/src/scripts/scripts-git" ]; then
 	(cd "Apps/Devel/src/scripts" && $MAKE download)
-	[ $? -eq 0 ]						|| exit 2
+	[ $? -eq 0 ] || _error "Could not download the development scripts"
 fi
 if [ ! -f "Apps/Devel/src/scripts/scripts-git/targets/$TARGET" ]; then
 	case "$MACHINE" in
@@ -543,7 +543,7 @@ while [ $# -gt 0 ]; do
 		all|bootstrap|clean|distclean|image|install|uninstall)
 			;;
 		*)
-			error "$1: Unknown target"
+			_error "$1: Unknown target"
 			_usage
 			exit $?
 			;;
