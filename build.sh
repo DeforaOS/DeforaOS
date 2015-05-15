@@ -88,7 +88,7 @@ check()
 
 	shift
 	for i in $@; do
-		VAR=`eval echo "\\\$\$i"`
+		VAR=$(eval echo "\\\$\$i")
 		[ -z "$VAR" ] && EMPTY="$EMPTY $i"
 	done
 	[ -z "$EMPTY" ] && return
