@@ -384,6 +384,11 @@ target_install()
 	for subdir in $SUBDIRS; do
 		SUBDIRS="$subdir"
 		case "$subdir" in
+			Apps/Devel/src/configure)
+				SUBDIRS="$subdir/configure-git/src
+						$subdir/configure-git/tools"
+				_target "install"		|| return 2
+				;;
 			System/src/libApp)
 				SUBDIRS="$subdir/libApp-git/src
 						$subdir/libApp-git/include
