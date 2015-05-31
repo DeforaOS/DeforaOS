@@ -169,10 +169,9 @@ while [ $# -ne 0 ]; do
 
 	if [ $clean -ne 0 ]; then
 		target="clean"
-		[ ! -d "$PACKAGE-$VERSION" ] && continue
 	fi
 	case "$target" in
-		all|clean|distclean|install|uninstall)
+		all|install|uninstall)
 			_target_make "$target"
 			;;
 		build)
@@ -183,6 +182,10 @@ while [ $# -ne 0 ]; do
 			else
 				_target_make all
 			fi
+			;;
+		clean|distclean)
+			[ -f "$PACKAGE-$VERSION/Makefile" ] \
+				&& _target_make "$target"
 			;;
 		configure|download|extract|patch)
 			"_target_$target"
