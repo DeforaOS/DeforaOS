@@ -31,7 +31,6 @@ DESTDIR=
 HOST=
 IMAGE_FILE=
 IMAGE_TYPE=
-LIBGCC=
 MACHINE=
 PKG_CONFIG_LIBDIR=
 PKG_CONFIG_PATH=
@@ -396,7 +395,7 @@ target_install()
 				LDFLAGS="$L -lc -lsocket"
 				_target "install"		|| return 2
 				SUBDIRS="$subdir/libApp-git/tools"
-				LDFLAGS="$L -lc $LIBGCC $D$P/lib/start.o"
+				LDFLAGS="$L -lc $D$P/lib/start.o"
 				_target "install"		|| return 2
 				;;
 			System/src/libc)
@@ -410,11 +409,11 @@ target_install()
 				LDFLAGS="$L -lc"
 				_target "install"		|| return 2
 				SUBDIRS="$subdir/libSystem-git/tools"
-				LDFLAGS="$L -lc $LIBGCC $D$P/lib/start.o"
+				LDFLAGS="$L -lc $D$P/lib/start.o"
 				_target "install"		|| return 2
 				;;
 			*)
-				LDFLAGS="$L -lc $LIBGCC $D$P/lib/start.o"
+				LDFLAGS="$L -lc $D$P/lib/start.o"
 				_target "install"		|| return 2
 				;;
 		esac
@@ -536,8 +535,6 @@ fi
 [ -z "$IMAGE_TYPE" ] && IMAGE_TYPE="image"
 [ -z "$IMAGE_FILE" ] && IMAGE_FILE="$VENDOR-$IMAGE_TYPE.img"
 [ -z "$LDFLAGS" ] && LDFLAGS="-nostdlib -L$DESTDIR$PREFIX/lib -Wl,-rpath-link,$DESTDIR$PREFIX/lib -Wl,-rpath,$PREFIX/lib"
-[ -z "$LIBGCC" -a -n "$CC" ] && LIBGCC=$($CC -print-libgcc-file-name)
-[ -z "$LIBGCC" ] && LIBGCC=$(cc -print-libgcc-file-name)
 [ -z "$UID" ] && UID=$(id -u)
 [ -z "$SUDO" -a "$UID" -ne 0 ] && SUDO="sudo"
 
