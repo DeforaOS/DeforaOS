@@ -184,8 +184,8 @@ while [ $# -ne 0 ]; do
 			fi
 			;;
 		clean|distclean)
-			[ -f "$PACKAGE-$VERSION/Makefile" ] \
-				&& _target_make "$target"
+			[ ! -f "$PACKAGE-$VERSION/Makefile" ] \
+				|| _target_make "$target"
 			;;
 		configure|download|extract|patch)
 			"_target_$target"
