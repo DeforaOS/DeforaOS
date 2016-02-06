@@ -533,7 +533,10 @@ fi
 [ -z "$CPPFLAGS" ] && CPPFLAGS="-nostdinc -I $DESTDIR$PREFIX/include -D __DeforaOS__"
 [ -z "$IMAGE_TYPE" ] && IMAGE_TYPE="image"
 [ -z "$IMAGE_FILE" ] && IMAGE_FILE="$VENDOR-$IMAGE_TYPE.img"
-[ -z "$LDFLAGS" ] && LDFLAGS="-nostdlib -L$DESTDIR$PREFIX/lib -Wl,-rpath-link,$DESTDIR$PREFIX/lib -Wl,-rpath,$PREFIX/lib"
+if [ -z "$LDFLAGS" ]; then
+	LDFLAGS="-nostdlib -L$DESTDIR$PREFIX/lib -Wl,-rpath-link,$DESTDIR$PREFIX/lib"
+	[ "$PREFIX" != "/usr" ] && LDFLAGS="$LDFLAGS -Wl,-rpath,$PREFIX/lib"
+fi
 [ -z "$UID" ] && UID=$(id -u)
 [ -z "$SUDO" -a "$UID" -ne 0 ] && SUDO="sudo"
 
