@@ -522,7 +522,6 @@ else
 fi
 
 #initialize variables
-[ -z "$CFLAGS" ] && CFLAGS="-Wall -g -O2 -ffreestanding"
 if [ -z "$CONFIGURE" ]; then
 	if [ -z "$PREFIX" ]; then
 		CONFIGURE="configure -O DeforaOS"
