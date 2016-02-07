@@ -370,6 +370,7 @@ _image_post()
 #target_install
 target_install()
 {
+	C="$CC"
 	D="$DESTDIR"
 	P="$PREFIX"
 	S="$SUBDIRS"
@@ -383,42 +384,17 @@ target_install()
 	for subdir in $SUBDIRS; do
 		SUBDIRS="$subdir"
 		case "$subdir" in
-			Apps/Devel/src/configure)
-				SUBDIRS="$subdir/configure-git/src
-						$subdir/configure-git/tools"
-				_target "install"		|| return 2
-				;;
-			System/src/libApp)
-				SUBDIRS="$subdir/libApp-git/src
-						$subdir/libApp-git/include
-						$subdir/libApp-git/data"
-				LDFLAGS="$L -lc -lsocket"
-				_target "install"		|| return 2
-				SUBDIRS="$subdir/libApp-git/tools"
-				LDFLAGS="$L -lc $D$P/lib/start.o"
-				_target "install"		|| return 2
-				;;
 			System/src/libc)
-				LDFLAGS="$L"
-				_target "install"		|| return 2
-				;;
-			System/src/libSystem)
-				SUBDIRS="$subdir/libSystem-git/src
-						$subdir/libSystem-git/include
-						$subdir/libSystem-git/data"
-				LDFLAGS="$L -lc"
-				_target "install"		|| return 2
-				SUBDIRS="$subdir/libSystem-git/tools"
-				LDFLAGS="$L -lc $D$P/lib/start.o"
 				_target "install"		|| return 2
 				;;
 			*)
-				LDFLAGS="$L -lc $D$P/lib/start.o"
+				CC="$C -specs $D$P/lib/gcc/deforaos-gcc.specs --sysroot $D"
 				_target "install"		|| return 2
 				;;
 		esac
 	done
 	SUBDIRS="$S"
+	CC="$C"
 	LDFLAGS="$L"
 	PKG_CONFIG_LIBDIR="$PKL"
 	PKG_CONFIG_SYSROOT_DIR="$PKS"
@@ -530,13 +506,9 @@ if [ -z "$CONFIGURE" ]; then
 	fi
 fi
 [ -z "$PREFIX" ] && PREFIX="/usr/local"
-[ -z "$CPPFLAGS" ] && CPPFLAGS="-nostdinc -I $DESTDIR$PREFIX/include -D __DeforaOS__"
+[ -z "$CC" ] && CC="gcc"
 [ -z "$IMAGE_TYPE" ] && IMAGE_TYPE="image"
 [ -z "$IMAGE_FILE" ] && IMAGE_FILE="$VENDOR-$IMAGE_TYPE.img"
-if [ -z "$LDFLAGS" ]; then
-	LDFLAGS="-nostdlib -L$DESTDIR$PREFIX/lib -Wl,-rpath-link,$DESTDIR$PREFIX/lib"
-	[ "$PREFIX" != "/usr" ] && LDFLAGS="$LDFLAGS -Wl,-rpath,$PREFIX/lib"
-fi
 [ -z "$UID" ] && UID=$(id -u)
 [ -z "$SUDO" -a "$UID" -ne 0 ] && SUDO="sudo"
 
