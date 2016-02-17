@@ -43,6 +43,9 @@ TAR='tar'
 #target_configure
 _target_configure()
 {
+	if [ -f "$PACKAGE-$VERSION/autogen.sh" ]; then
+		(cd "$PACKAGE-$VERSION" && ./autogen.sh)
+	fi
 	if [ -f "$PACKAGE-$VERSION/configure" ]; then
 		(cd "$PACKAGE-$VERSION" && ./configure)
 	elif [ -f "$PACKAGE-$VERSION/project.conf" ]; then
