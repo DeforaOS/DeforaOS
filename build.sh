@@ -370,7 +370,6 @@ _image_post()
 #target_install
 target_install()
 {
-	C="$CC"
 	D="$DESTDIR"
 	P="$PREFIX"
 	S="$SUBDIRS"
@@ -388,13 +387,15 @@ target_install()
 				_target "install"		|| return 2
 				;;
 			*)
+				C="$CC"
+				[ -z "$C" ] && C="gcc"
 				CC="$C -specs $D$P/lib/gcc/deforaos-gcc.specs --sysroot $D"
 				_target "install"		|| return 2
+				CC="$C"
 				;;
 		esac
 	done
 	SUBDIRS="$S"
-	CC="$C"
 	LDFLAGS="$L"
 	PKG_CONFIG_LIBDIR="$PKL"
 	PKG_CONFIG_SYSROOT_DIR="$PKS"
@@ -506,7 +507,6 @@ if [ -z "$CONFIGURE" ]; then
 	fi
 fi
 [ -z "$PREFIX" ] && PREFIX="/usr/local"
-[ -z "$CC" ] && CC="gcc"
 [ -z "$IMAGE_TYPE" ] && IMAGE_TYPE="image"
 [ -z "$IMAGE_FILE" ] && IMAGE_FILE="$VENDOR-$IMAGE_TYPE.img"
 [ -z "$UID" ] && UID=$(id -u)
