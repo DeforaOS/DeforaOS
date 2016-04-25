@@ -7,8 +7,9 @@
 SUBDIRS	= System/src Apps Library
 PREFIX	= /usr/local
 DEVNULL	= /dev/null
+EXEEXT	=
 BUILDSH	= ./build.sh -v
-CONFIGURE= ./Apps/Devel/src/configure/configure-git/src/configure
+CONFIGURE= ./Apps/Devel/src/configure/configure-git/src/configure$(EXEEXT)
 
 
 all:
