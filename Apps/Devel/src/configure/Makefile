@@ -14,27 +14,27 @@ INSTALL	= install
 all: $(TARGETS)
 
 build: configure
-	../script.sh -P "$(PREFIX)" -- "build"
+	../../../../System/src/script.sh -P "$(PREFIX)" -- "build"
 
 configure: patch
-	../script.sh -P "$(PREFIX)" -- "configure"
+	../../../../System/src/script.sh -P "$(PREFIX)" -- "configure"
 
 download:
-	../script.sh -O URL=http://git.defora.org/DeforaOS/$(PACKAGE).git -P "$(PREFIX)" -- "download"
+	../../../../System/src/script.sh -O URL=http://git.defora.org/DeforaOS/$(PACKAGE).git -P "$(PREFIX)" -- "download"
 
 extract: download
-	../script.sh -P "$(PREFIX)" -- "extract"
+	../../../../System/src/script.sh -P "$(PREFIX)" -- "extract"
 
 patch: extract
-	../script.sh -P "$(PREFIX)" -- "patch"
+	../../../../System/src/script.sh -P "$(PREFIX)" -- "patch"
 
 clean:
 	$(RM) -- $(build_OBJS) $(configure_OBJS) $(download_OBJS) $(extract_OBJS) $(patch_OBJS)
-	../script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)build"
-	../script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)configure"
-	../script.sh -O URL=http://git.defora.org/DeforaOS/$(PACKAGE).git -c -P "$(PREFIX)" -- "$(OBJDIR)download"
-	../script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)extract"
-	../script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)patch"
+	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)build"
+	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)configure"
+	../../../../System/src/script.sh -O URL=http://git.defora.org/DeforaOS/$(PACKAGE).git -c -P "$(PREFIX)" -- "$(OBJDIR)download"
+	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)extract"
+	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)patch"
 
 distclean: clean
 	$(RM) -- $(TARGETS)
@@ -60,9 +60,9 @@ distcheck: dist
 	$(RM) -r -- $(PACKAGE)-$(VERSION)
 
 install: $(TARGETS)
-	../script.sh -P "$(DESTDIR)$(PREFIX)" -i -- "build"
+	../../../../System/src/script.sh -P "$(DESTDIR)$(PREFIX)" -i -- "build"
 
 uninstall:
-	../script.sh -P "$(DESTDIR)$(PREFIX)" -u -- "build"
+	../../../../System/src/script.sh -P "$(DESTDIR)$(PREFIX)" -u -- "build"
 
 .PHONY: all clean distclean dist distcheck install uninstall build configure download extract patch
