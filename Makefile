@@ -7,6 +7,7 @@
 SUBDIRS	= System/src Apps Library
 PREFIX	= /usr/local
 DEVNULL	= /dev/null
+BUILDSH	= ./build.sh -v
 CONFIGURE= ./Apps/Devel/src/configure/configure-git/src/configure
 
 
@@ -28,7 +29,7 @@ clean:
 
 dist:
 	#XXX hack to bootstrap only configure
-	./build.sh -v -O MAKE="$(MAKE)" bootstrap < "$(DEVNULL)"
+	$(BUILDSH) -O MAKE="$(MAKE)" bootstrap < "$(DEVNULL)"
 	$(CONFIGURE) -v
 	$(MAKE) dist
 
