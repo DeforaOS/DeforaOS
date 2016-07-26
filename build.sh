@@ -488,14 +488,8 @@ else
 fi
 
 #initialize variables
-if [ -z "$CONFIGURE" ]; then
-	if [ -z "$PREFIX" ]; then
-		CONFIGURE="configure -O DeforaOS"
-	else
-		CONFIGURE="configure -O DeforaOS -p $PREFIX"
-	fi
-fi
 [ -z "$PREFIX" ] && PREFIX="/usr/local"
+[ -z "$CONFIGURE" ] && CONFIGURE="configure -O DeforaOS -p $PREFIX"
 [ -z "$IMAGE_TYPE" ] && IMAGE_TYPE="image"
 [ -z "$IMAGE_FILE" ] && IMAGE_FILE="$VENDOR-$IMAGE_TYPE.img"
 [ -z "$UID" ] && UID=$(id -u)
