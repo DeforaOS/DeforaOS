@@ -190,11 +190,8 @@ while [ $# -ne 0 ]; do
 			[ ! -f "$PACKAGE-$VERSION/Makefile" ] \
 				|| _target_make "$target"
 			;;
-		configure|download|extract|patch)
+		configure|download|extract|package|patch)
 			"_target_$target"
-			;;
-		package)
-			_target_package
 			;;
 		*)
 			_usage
