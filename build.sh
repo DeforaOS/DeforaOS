@@ -265,8 +265,9 @@ _bootstrap_libsystem()
 	if [ $# -eq 0 ]; then
 		(SUBDIRS="System/src/libSystem" _target "all")	|| return 2
 	else
+		(SUBDIRS="System/src/libSystem" _target "patch")|| return 2
 		(SUBDIRS="System/src/libSystem/libSystem-git/src"
-		_target "patch" "$@")				|| return 2
+		_target "$@")				|| return 2
 	fi
 }
 
