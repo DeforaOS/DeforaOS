@@ -139,7 +139,7 @@ _target()
 	[ ! -z "$LDFLAGSF" ] && _MAKE="$_MAKE LDFLAGSF=\"$LDFLAGSF\""
 	while [ $# -gt 0 ]; do
 		for i in $SUBDIRS; do
-			if [ -n "$CONFIGURE" ]; then
+			if [ -n "$CONFIGURE" -a -r "$i/project.conf" ]; then
 				$DEBUG $CONFIGURE "$i"		|| return 2
 			fi
 			_info "Making sub-target $1 in \"$i\""
