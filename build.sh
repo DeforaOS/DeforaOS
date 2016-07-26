@@ -202,14 +202,14 @@ target_bootstrap()
 
 _bootstrap_configure()
 {
-	SUBDIRS="Apps/Devel/src/configure"
 	TARGETS="patch clean all"
 
 	[ $# -eq 1 -a "$1" = "install" ] && TARGETS="patch install"
 	(CPPFLAGS="-I ../../../../../../System/src/libSystem/libSystem-git/include"
 	CFLAGSF="-W"
 	LDFLAGSF="../../../../../../System/src/libSystem/libSystem-git/src/libSystem.a"
-	_target $TARGETS					|| return 2)
+	SUBDIRS="Apps/Devel/src/configure"
+	_target $TARGETS)					|| return 2
 	$DEBUG ./Apps/Devel/src/configure/configure-git/src/configure -v -p \
 		"$PREFIX" "System/src" "Apps" "Library"		|| return 2
 }
@@ -217,8 +217,8 @@ _bootstrap_configure()
 _bootstrap_database()
 {
 	#bootstrap libDatabase
-	SUBDIRS="Apps/Database/src/libDatabase"
-	_target "clean" "install"				|| return 2
+	(SUBDIRS="Apps/Database/src/libDatabase" _target "clean" "install") \
+								|| return 2
 }
 
 _bootstrap_desktop()
@@ -226,12 +226,11 @@ _bootstrap_desktop()
 	RET=0
 
 	#bootstrap libDesktop
-	SUBDIRS="Apps/Desktop/src/libDesktop"
-	_target "clean" "install"				|| return 2
+	(SUBDIRS="Apps/Desktop/src/libDesktop" _target "clean" "install") \
+								|| return 2
 	#build all desktop applications
 	#FIXME some desktop applications depend on others being installed
-	SUBDIRS="Apps/Desktop/src"
-	_target "clean" "all"					|| return 2
+	(SUBDIRS="Apps/Desktop/src" _target "clean" "all")	|| return 2
 }
 
 _bootstrap_devel()
@@ -245,59 +244,58 @@ _bootstrap_devel()
 
 	#build all development applications
 	for i in $S; do
-		SUBDIRS="$i"
-		_target "clean" "all"				|| RET=$?
+		(SUBDIRS="$i" _target "clean" "all")		|| RET=$?
 	done
 	return $RET
 }
 
 _bootstrap_documentation()
 {
-	SUBDIRS="Library/Documentation/src"
-
 	#build the documentation
-	_target "clean" "all"					|| return 2
+	(SUBDIRS="Library/Documentation/src" _target "clean" "all") \
+								|| return 2
 }
 
 _bootstrap_graphics()
 {
-	SUBDIRS="Apps/Graphics/src"
-
 	#build all graphics applications
-	_target "clean" "all"
+	(SUBDIRS="Apps/Graphics/src" _target "clean" "all")	|| return 2
 }
 
 _bootstrap_libsystem()
 {
-	SUBDIRS="System/src/libSystem"
-
-	_target "patch"						|| return 2
-	SUBDIRS="System/src/libSystem/libSystem-git/src"
-	_target "clean" "$@"					|| return 2
+	(SUBDIRS="System/src/libSystem" _target "clean")	|| return 2
+	if [ $# -eq 0 ]; then
+		(SUBDIRS="System/src/libSystem" _target "all")	|| return 2
+	else
+		(SUBDIRS="System/src/libSystem/libSystem-git/src"
+		_target "patch" "$@")				|| return 2
+	fi
 }
 
 _bootstrap_network()
 {
-	SUBDIRS="Apps/Network/src"
-
 	#build all network applications
-	_target "clean" "all"					|| return 2
+	(SUBDIRS="Apps/Network/src" _target "clean" "all")	|| return 2
 }
 
 _bootstrap_system()
 {
 	RET=0
-	S="System/src/Init
+	SI="System/src/libSystem
+		System/src/libApp
+		System/src/libParser"
+	SB="System/src/Init
 		System/src/Splasher
 		System/src/VFS"
 
-	#bootstrap libSystem, libApp and libParser
-	SUBDIRS="System/src/libSystem System/src/libApp System/src/libParser"
-	_target "clean" "install"				|| return 2
+	#bootstrap dependencies
+	for i in $SI; do
+		(SUBDIRS="$i" _target "clean" "install")	|| return 2
+	done
 	#build the other system applications
-	for i in $S; do
-		SUBDIRS="$i"
-		_target "clean" "all"				|| RET=$?
+	for i in $SB; do
+		(SUBDIRS="$i" _target "clean" "all")		|| RET=$?
 	done
 	return $RET
 }
@@ -313,8 +311,7 @@ _bootstrap_unix()
 		Apps/Servers/src/inetd"
 
 	for i in $S; do
-		SUBDIRS="$i"
-		_target "clean" "all"				|| RET=$?
+		(SUBDIRS="$i" _target "clean" "all")		|| RET=$?
 	done
 	return $RET
 }
