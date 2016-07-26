@@ -58,6 +58,7 @@ MKDIR="mkdir -m 0755 -p"
 MKNOD="mknod"
 MV="mv -f"
 RMDIR="rmdir -p"
+SUDO=
 
 #internals
 DEVNULL="/dev/null"
