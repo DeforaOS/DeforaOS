@@ -493,6 +493,7 @@ fi
 [ -z "$IMAGE_TYPE" ] && IMAGE_TYPE="image"
 [ -z "$IMAGE_FILE" ] && IMAGE_FILE="$VENDOR-$IMAGE_TYPE.img"
 [ -z "$UID" ] && UID=$(id -u)
+[ -z "$GID" ] && GID=$(id -g)
 [ -z "$SUDO" -a "$UID" -ne 0 ] && SUDO="sudo"
 
 #run targets
