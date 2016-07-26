@@ -193,7 +193,7 @@ target_bootstrap()
 	_bootstrap_graphics		|| FAILED="$FAILED Graphics"
 	_bootstrap_desktop		|| FAILED="$FAILED Desktop"
 	_bootstrap_network		|| FAILED="$FAILED Network"
-	_bootstrap_posix		|| FAILED="$FAILED POSIX"
+	_bootstrap_unix			|| FAILED="$FAILED UNIX"
 	_bootstrap_documentation	|| FAILED="$FAILED Documentation"
 	[ -z "$FAILED" ]					&& return 0
 	echo "Failed to build:$FAILED" 1>&2
@@ -284,23 +284,6 @@ _bootstrap_network()
 	_target "clean" "all"					|| return 2
 }
 
-_bootstrap_posix()
-{
-	RET=0
-	S="System/src/libc
-		Apps/Unix/src/sh
-		Apps/Unix/src/utils
-		Apps/Unix/src/devel
-		Apps/Unix/src/others
-		Apps/Servers/src/inetd"
-
-	for i in $S; do
-		SUBDIRS="$i"
-		_target "clean" "all"				|| RET=$?
-	done
-	return $RET
-}
-
 _bootstrap_system()
 {
 	RET=0
@@ -312,6 +295,23 @@ _bootstrap_system()
 	SUBDIRS="System/src/libSystem System/src/libApp System/src/libParser"
 	_target "clean" "install"				|| return 2
 	#build the other system applications
+	for i in $S; do
+		SUBDIRS="$i"
+		_target "clean" "all"				|| RET=$?
+	done
+	return $RET
+}
+
+_bootstrap_unix()
+{
+	RET=0
+	S="System/src/libc
+		Apps/Unix/src/sh
+		Apps/Unix/src/utils
+		Apps/Unix/src/devel
+		Apps/Unix/src/others
+		Apps/Servers/src/inetd"
+
 	for i in $S; do
 		SUBDIRS="$i"
 		_target "clean" "all"				|| RET=$?
