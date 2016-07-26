@@ -17,6 +17,7 @@
 
 
 #variables
+BOOTSTRAP=
 BOOTSTRAP_CFLAGS=
 BOOTSTRAP_CPPFLAGS=
 BOOTSTRAP_LDFLAGS=
@@ -28,6 +29,7 @@ CPPFLAGSF=
 LDFLAGS=
 LDFLAGSF=
 DESTDIR=
+EXEEXT=
 HOST=
 IMAGE_FILE=
 IMAGE_TYPE=
@@ -37,6 +39,7 @@ PKG_CONFIG_PATH=
 PKG_CONFIG_SYSROOT_DIR=
 PREFIX=
 PROGNAME="build.sh"
+SOEXT=
 SYSTEM=
 TARGET=
 VENDOR="DeforaOS"
@@ -165,7 +168,7 @@ target_bootstrap()
 	CONFIGURE=
 	DESTDIR=
 	#build libSystem and configure
-	_bootstrap_libsystem "libSystem.a"			|| return 2
+	_bootstrap_libsystem_static				|| return 2
 	_bootstrap_configure					|| return 2
 	#warn the user
 	echo
@@ -271,10 +274,20 @@ _bootstrap_libsystem()
 	fi
 }
 
+_bootstrap_libsystem_static()
+{
+	_bootstrap_libsystem "libSystem.a"
+}
+
 _bootstrap_network()
 {
 	#build all network applications
 	(SUBDIRS="Apps/Network/src" _target "clean" "all")	|| return 2
+}
+
+_bootstrap_scripts()
+{
+	(SUBDIRS="Apps/Devel/src/scripts" _target "download")	|| return 2
 }
 
 _bootstrap_system()
@@ -452,13 +465,25 @@ shift $((OPTIND - 1))
 [ -z "$SYSTEM" ] && SYSTEM=$(uname -s)
 [ -z "$TARGET" ] && TARGET="$SYSTEM-$MACHINE"
 [ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$TARGET"
-if [ ! -d "Apps/Devel/src/scripts/scripts-git" ]; then
-	(cd "Apps/Devel/src/scripts" && $MAKE download)
-	if [ $? -eq 0 ]; then
-		_error "Could not download the development scripts"
+
+#check for bootstrap
+[ -r "System/src/libSystem/libSystem-git/src/libSystem.a" ] \
+	|| BOOTSTRAP="$BOOTSTRAP libsystem_static"
+[ -x "Apps/Devel/src/configure/configure-git/src/configure$EXEEXT" ] \
+	|| BOOTSTRAP="$BOOTSTRAP configure"
+[ -f "Apps/Devel/src/scripts/scripts-git/Makefile" ] \
+	|| BOOTSTRAP="$BOOTSTRAP scripts"
+
+#bootstrap what needs to be
+for method in $BOOTSTRAP; do
+	_info "Bootstrapping component $method"
+	"_bootstrap_$method"
+	if [ $? -ne 0 ]; then
+		_error "$method: Unable to bootstrap component"
 		exit $?
 	fi
-fi
+done
+
 if [ ! -f "Apps/Devel/src/scripts/scripts-git/targets/$TARGET" ]; then
 	case "$MACHINE" in
 		arm*b|arm*l)
@@ -486,7 +511,7 @@ fi
 
 #initialize variables
 [ -z "$PREFIX" ] && PREFIX="/usr/local"
-[ -z "$CONFIGURE" ] && CONFIGURE="configure -O DeforaOS -p $PREFIX"
+[ -z "$CONFIGURE" ] && CONFIGURE="$PWD/Apps/Devel/src/configure/configure-git/src/configure$EXEEXT -O DeforaOS -p $PREFIX"
 [ -z "$IMAGE_TYPE" ] && IMAGE_TYPE="image"
 [ -z "$IMAGE_FILE" ] && IMAGE_FILE="$VENDOR-$IMAGE_TYPE.img"
 [ -z "$UID" ] && UID=$(id -u)
