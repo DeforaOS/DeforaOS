@@ -26,6 +26,7 @@ CFLAGSF=
 CPATH=
 CPPFLAGS=
 CPPFLAGSF=
+EXEEXT=
 LDFLAGS=
 LDFLAGSF=
 DESTDIR=
@@ -142,7 +143,7 @@ _target()
 	[ ! -z "$LDFLAGSF" ] && _MAKE="$_MAKE LDFLAGSF=\"$LDFLAGSF\""
 	while [ $# -gt 0 ]; do
 		for i in $SUBDIRS; do
-			_info "Making sub-target $1 in \"$i\""
+			_info "Making target \"$1\" in \"$i\""
 			(cd "$i" && eval $_MAKE "$1")		|| return 2
 		done
 		shift
@@ -169,7 +170,9 @@ target_bootstrap()
 	DESTDIR=
 	#build libSystem and configure
 	_bootstrap_libsystem_static				|| return 2
-	_bootstrap_configure					|| return 2
+	_bootstrap_configure_static				|| return 2
+	#re-generate the Makefiles
+	_bootstrap_makefiles					|| return 2
 	#warn the user
 	echo
 	echo '================================================================='
@@ -186,7 +189,8 @@ target_bootstrap()
 	FAILED=
 	PATH="$PATH:$PREFIX/bin"
 	PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
-	_bootstrap_configure "install"				|| return 2
+	_bootstrap_configure					|| return 2
+	_bootstrap_makefiles					|| return 2
 	_bootstrap_system		|| FAILED="$FAILED System"
 	_bootstrap_devel		|| FAILED="$FAILED Devel"
 	_bootstrap_database		|| FAILED="$FAILED Database"
@@ -202,16 +206,19 @@ target_bootstrap()
 
 _bootstrap_configure()
 {
-	TARGETS="patch clean all"
+	(SUBDIRS="Apps/Devel/src/configure" _target "clean" "patch" "install") \
+								|| return 2
+}
 
-	[ $# -eq 1 -a "$1" = "install" ] && TARGETS="patch install"
+_bootstrap_configure_static()
+{
+	(SUBDIRS="Apps/Devel/src/configure"
+	_target "clean" "patch")				|| return 2
 	(CPPFLAGS="-I ../../../../../../System/src/libSystem/libSystem-git/include"
 	CFLAGSF="-W"
 	LDFLAGSF="../../../../../../System/src/libSystem/libSystem-git/src/libSystem.a"
-	SUBDIRS="Apps/Devel/src/configure"
-	_target $TARGETS)					|| return 2
-	$DEBUG ./Apps/Devel/src/configure/configure-git/src/configure -v -p \
-		"$PREFIX" "System/src" "Apps" "Library"		|| return 2
+	SUBDIRS="Apps/Devel/src/configure/configure-git"
+	_target "all")						|| return 2
 }
 
 _bootstrap_database()
@@ -277,6 +284,12 @@ _bootstrap_libsystem()
 _bootstrap_libsystem_static()
 {
 	_bootstrap_libsystem "libSystem.a"
+}
+
+_bootstrap_makefiles()
+{
+	$DEBUG "Apps/Devel/src/configure/configure-git/src/configure$EXEEXT" \
+		-v -p "$PREFIX" "System/src" "Apps" "Library"	|| return 2
 }
 
 _bootstrap_network()
@@ -460,31 +473,9 @@ while getopts "DvO:" name; do
 done
 shift $((OPTIND - 1))
 
-#initialize target
-[ -z "$MACHINE" ] && MACHINE=$(uname -m)
-[ -z "$SYSTEM" ] && SYSTEM=$(uname -s)
-[ -z "$TARGET" ] && TARGET="$SYSTEM-$MACHINE"
-[ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$TARGET"
-
-#check for bootstrap
-[ -r "System/src/libSystem/libSystem-git/src/libSystem.a" ] \
-	|| BOOTSTRAP="$BOOTSTRAP libsystem_static"
-[ -x "Apps/Devel/src/configure/configure-git/src/configure$EXEEXT" ] \
-	|| BOOTSTRAP="$BOOTSTRAP configure"
-[ -f "Apps/Devel/src/scripts/scripts-git/Makefile" ] \
-	|| BOOTSTRAP="$BOOTSTRAP scripts"
-
-#bootstrap what needs to be
-for method in $BOOTSTRAP; do
-	_info "Bootstrapping component $method"
-	"_bootstrap_$method"
-	if [ $? -ne 0 ]; then
-		_error "$method: Unable to bootstrap component"
-		exit $?
-	fi
-done
-
-if [ ! -f "Apps/Devel/src/scripts/scripts-git/targets/$TARGET" ]; then
+#detect the platform
+if [ -z "$MACHINE" ]; then
+	MACHINE=$(uname -m)
 	case "$MACHINE" in
 		arm*b|arm*l)
 			MACHINE="arm"
@@ -496,13 +487,45 @@ if [ ! -f "Apps/Devel/src/scripts/scripts-git/targets/$TARGET" ]; then
 			MACHINE="amd64"
 			;;
 	esac
+fi
+if [ -z "$SYSTEM" ]; then
+	SYSTEM=$(uname -s)
 	case "$SYSTEM" in
 		MINGW32_NT-?.?)
+			[ -z "$EXEEXT" ] && EXEEXT=".exe"
+			[ -z "$SOEXT" ] && SOEXT=".dll"
 			SYSTEM="Windows"
 			;;
+		*)
+			[ -z "$SOEXT" ] && SOEXT=".so"
+			;;
 	esac
-	TARGET="$SYSTEM-$MACHINE"
 fi
+[ -z "$TARGET" ] && TARGET="$SYSTEM-$MACHINE"
+
+#check for bootstrap
+[ -r "System/src/libSystem/libSystem-git/src/libSystem.a" ] \
+	|| BOOTSTRAP="$BOOTSTRAP libsystem_static"
+[ -x "Apps/Devel/src/configure/configure-git/src/configure$EXEEXT" ] \
+	|| BOOTSTRAP="$BOOTSTRAP configure_static"
+[ -f "Apps/Devel/src/scripts/Makefile" ] \
+	|| BOOTSTRAP="$BOOTSTRAP makefiles"
+[ -d "Apps/Devel/src/scripts/scripts-git" ] \
+	|| BOOTSTRAP="$BOOTSTRAP scripts"
+
+#bootstrap what needs to be
+for method in $BOOTSTRAP; do
+	_info "Bootstrapping component \"$method\""
+	"_bootstrap_$method"
+	if [ $? -ne 0 ]; then
+		_error "$method: Unable to bootstrap component"
+		exit $?
+	fi
+done
+
+#initialize the target
+[ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$TARGET"
+
 if [ ! -f "Apps/Devel/src/scripts/scripts-git/targets/$TARGET" ]; then
 	_warning "$TARGET: Unsupported target" 1>&2
 else
@@ -524,16 +547,22 @@ if [ $# -lt 1 ]; then
 	exit $?
 fi
 while [ $# -gt 0 ]; do
-	case "$1" in
+	target="$1"
+	shift
+
+	case "$target" in
 		all|bootstrap|clean|distclean|image|install|uninstall)
+			_info "Making target \"$target\" on $TARGET"
+			"target_$target"
+			if [ $? -ne 0 ]; then
+				_error "$target: Could not complete target"
+				exit $?
+			fi
 			;;
 		*)
-			_error "$1: Unknown target"
+			_error "$target: Unknown target"
 			_usage
 			exit $?
 			;;
 	esac
-	_info "Making target $1 on $TARGET"
-	"target_$1"						|| exit 2
-	shift
 done
