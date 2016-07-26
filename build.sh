@@ -202,25 +202,16 @@ target_bootstrap()
 
 _bootstrap_configure()
 {
-	C="$CPPFLAGS"
-	CF="$CFLAGSF"
-	L="$LDFLAGSF"
-	CPPFLAGS="-I ../../../../../../System/src/libSystem/libSystem-git/include"
+	SUBDIRS="Apps/Devel/src/configure"
+	TARGETS="patch clean all"
+
+	[ $# -eq 1 -a "$1" = "install" ] && TARGETS="patch install"
+	(CPPFLAGS="-I ../../../../../../System/src/libSystem/libSystem-git/include"
 	CFLAGSF="-W"
 	LDFLAGSF="../../../../../../System/src/libSystem/libSystem-git/src/libSystem.a"
-	SUBDIRS="Apps/Devel/src/configure"
-	TARGETS="patch"
-
-	_target $TARGETS					|| return 2
-	SUBDIRS="Apps/Devel/src/configure/configure-git/src"
-	TARGETS="clean all"
-	[ $# -eq 1 -a "$1" = "install" ] && TARGETS="install"
-	_target $TARGETS					|| return 2
+	_target $TARGETS					|| return 2)
 	$DEBUG ./Apps/Devel/src/configure/configure-git/src/configure -v -p \
 		"$PREFIX" "System/src" "Apps" "Library"		|| return 2
-	CPPFLAGS="$C"
-	CFLAGSF="$CF"
-	LDFLAGSF="$L"
 }
 
 _bootstrap_database()
