@@ -27,14 +27,14 @@
 #variables
 DESTDIR="$PWD/destdir"
 EXT=".tar.gz"
-GIT_BRANCH="master"
+GIT_BRANCH='master'
 PREFIX="/usr/local"
 PROGNAME="script.sh"
 #executables
 [ -z "$CONFIGURE" ] && CONFIGURE='configure -v'
 FETCH='wget'
 GIT='git'
-[ -n "$MAKE" ] || MAKE="make"
+[ -n "$MAKE" ] || MAKE='make'
 RM='rm -f'
 TAR='tar'
 
@@ -97,7 +97,7 @@ _target_make()
 _target_package()
 {
 	$RM -r "$DESTDIR"
-	_target_make DESTDIR="$DESTDIR" install &&
+	_target_make DESTDIR="$DESTDIR" 'install' &&
 	(cd "$DESTDIR" && $TAR -czf - "${PREFIX##/}") \
 		> "$PWD/$PACKAGE-$VERSION.pkg"
 }
@@ -171,7 +171,7 @@ while [ $# -ne 0 ]; do
 	shift
 
 	if [ $clean -ne 0 ]; then
-		target="clean"
+		target='clean'
 	fi
 	case "$target" in
 		all|install|uninstall)
@@ -183,7 +183,7 @@ while [ $# -ne 0 ]; do
 			elif [ $install -ne 0 ]; then
 				_target_make 'install'
 			else
-				_target_make all
+				_target_make 'all'
 			fi
 			;;
 		clean|distclean)
