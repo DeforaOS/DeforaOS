@@ -127,7 +127,6 @@ _info()
 _target()
 {
 	_MAKE="$MAKE"
-	[ ! -z "$CONFIGURE" ] && _MAKE="CONFIGURE=\"$CONFIGURE\" $_MAKE"
 	[ ! -z "$DESTDIR" ] && _MAKE="$_MAKE DESTDIR=\"$DESTDIR\""
 	[ ! -z "$PREFIX" ] && _MAKE="$_MAKE PREFIX=\"$PREFIX\""
 	[ ! -z "$CC" ] && _MAKE="$_MAKE CC=\"$CC\""
@@ -140,9 +139,6 @@ _target()
 	[ ! -z "$LDFLAGSF" ] && _MAKE="$_MAKE LDFLAGSF=\"$LDFLAGSF\""
 	while [ $# -gt 0 ]; do
 		for i in $SUBDIRS; do
-			if [ -n "$CONFIGURE" -a -r "$i/project.conf" ]; then
-				$DEBUG $CONFIGURE "$i"		|| return 2
-			fi
 			_info "Making sub-target $1 in \"$i\""
 			(cd "$i" && eval $_MAKE "$1")		|| return 2
 		done
