@@ -199,6 +199,7 @@ target_bootstrap()
 	_bootstrap_wrap desktop		|| FAILED="$FAILED Desktop"
 	_bootstrap_wrap network		|| FAILED="$FAILED Network"
 	_bootstrap_wrap unix		|| FAILED="$FAILED UNIX"
+	_bootstrap_wrap web		|| FAILED="$FAILED Web"
 	_bootstrap_wrap documentation	|| FAILED="$FAILED Documentation"
 	[ -z "$FAILED" ]					&& return 0
 	echo "Failed to build:$FAILED" 1>&2
@@ -335,6 +336,12 @@ _bootstrap_unix()
 		(SUBDIRS="$i" _target "clean" "all")		|| RET=$?
 	done
 	return $RET
+}
+
+_bootstrap_web()
+{
+	#build all web applications
+	(SUBDIRS="Apps/Web/src" _target "clean" "all")		|| return 2
 }
 
 _bootstrap_wrap()
