@@ -43,6 +43,8 @@ PROGNAME="build.sh"
 SOEXT=
 SYSTEM=
 TARGET=
+TARGET_MACHINE=
+TARGET_SYSTEM=
 VENDOR="DeforaOS"
 VERBOSE=0
 
@@ -501,7 +503,10 @@ if [ -z "$SYSTEM" ]; then
 			;;
 	esac
 fi
-[ -z "$TARGET" ] && TARGET="$SYSTEM-$MACHINE"
+[ -z "$HOST" ] && HOST="$SYSTEM-$MACHINE"
+[ -z "$TARGET_MACHINE" ] && TARGET_MACHINE="$MACHINE"
+[ -z "$TARGET_SYSTEM" ] && TARGET_SYSTEM="$SYSTEM"
+[ -z "$TARGET" ] && TARGET="$TARGET_SYSTEM-$TARGET_MACHINE"
 
 #check for bootstrap
 [ -r "System/src/libSystem/libSystem-git/src/libSystem.a" ] \
