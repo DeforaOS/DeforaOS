@@ -208,14 +208,14 @@ target_bootstrap()
 
 _bootstrap_configure()
 {
-	(SUBDIRS="Apps/Devel/src/configure" _target "clean" "patch" "install") \
+	(SUBDIRS="Apps/Devel/src/configure" _target "clean" "install") \
 								|| return 2
 }
 
 _bootstrap_configure_static()
 {
-	(SUBDIRS="Apps/Devel/src/configure"
-	_target "clean" "patch")				|| return 2
+	(SUBDIRS="Apps/Devel/src/configure" _target "clean" "patch") \
+								|| return 2
 	(CPPFLAGS="-I ../../../../../../System/src/libSystem/libSystem-git/include"
 	CFLAGSF="-W"
 	LDFLAGSF="../../../../../../System/src/libSystem/libSystem-git/src/libSystem.a"
@@ -273,19 +273,15 @@ _bootstrap_graphics()
 
 _bootstrap_libsystem()
 {
-	(SUBDIRS="System/src/libSystem" _target "clean")	|| return 2
-	if [ $# -eq 0 ]; then
-		(SUBDIRS="System/src/libSystem" _target "all")	|| return 2
-	else
-		(SUBDIRS="System/src/libSystem" _target "patch")|| return 2
-		(SUBDIRS="System/src/libSystem/libSystem-git/src"
-		_target "$@")				|| return 2
-	fi
+	(SUBDIRS="System/src/libSystem" _target "clean" "install") \
+								|| return 2
 }
 
 _bootstrap_libsystem_static()
 {
-	_bootstrap_libsystem "libSystem.a"
+	(SUBDIRS="System/src/libSystem" _target "clean" "patch")|| return 2
+	(SUBDIRS="System/src/libSystem/libSystem-git/src"
+	_target "libSystem.a")					|| return 2
 }
 
 _bootstrap_makefiles()
