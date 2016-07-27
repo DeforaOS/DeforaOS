@@ -326,6 +326,7 @@ _bootstrap_system()
 {
 	RET=0
 	SI="System/src/libSystem
+		System/src/libMarshall
 		System/src/libApp
 		System/src/libParser"
 	SB="System/src/Init
