@@ -26,6 +26,7 @@ CFLAGSF=
 CPATH=
 CPPFLAGS=
 CPPFLAGSF=
+DESTDIR=
 EXEEXT=
 LDFLAGS=
 LDFLAGSF=
@@ -35,6 +36,7 @@ HOST=
 IMAGE_FILE=
 IMAGE_TYPE=
 MACHINE=
+OBJDIR=
 PKG_CONFIG_LIBDIR=
 PKG_CONFIG_PATH=
 PKG_CONFIG_SYSROOT_DIR=
@@ -45,6 +47,7 @@ SYSTEM=
 TARGET=
 TARGET_MACHINE=
 TARGET_SYSTEM=
+TOOLDIR=
 VENDOR="DeforaOS"
 VERBOSE=0
 
@@ -143,6 +146,7 @@ _target()
 	[ ! -z "$LD" ] && _MAKE="$_MAKE LD=\"$LD\""
 	[ ! -z "$LDFLAGS" ] && _MAKE="$_MAKE LDFLAGS=\"$LDFLAGS\""
 	[ ! -z "$LDFLAGSF" ] && _MAKE="$_MAKE LDFLAGSF=\"$LDFLAGSF\""
+	[ ! -z "$OBJDIR" ] && _MAKE="$_MAKE OBJDIR=\"$OBJDIR\""
 	while [ $# -gt 0 ]; do
 		for i in $SUBDIRS; do
 			_info "Making target \"$1\" in \"$i\""
@@ -216,11 +220,13 @@ _bootstrap_configure_static()
 {
 	(SUBDIRS="Apps/Devel/src/configure" _target "clean" "patch") \
 								|| return 2
-	(CPPFLAGS="-I ../../../../../../System/src/libSystem/libSystem-git/include" \
+	(DESTDIR= \
+	PREFIX="$TOOLDIR" \
+	CPPFLAGS="-I $TOOLDIR/include" \
 	CFLAGSF="-W" \
-	LDFLAGSF="../../../../../../System/src/libSystem/libSystem-git/src/libSystem.a" \
+	LDFLAGSF="$TOOLDIR/lib/libSystem.a" \
 	SUBDIRS="Apps/Devel/src/configure/configure-git" \
-	_target "all")						|| return 2
+	_target "install")					|| return 2
 }
 
 _bootstrap_database()
@@ -287,8 +293,16 @@ _bootstrap_libsystem()
 _bootstrap_libsystem_static()
 {
 	(SUBDIRS="System/src/libSystem" _target "clean" "patch")|| return 2
-	(SUBDIRS="System/src/libSystem/libSystem-git/src" \
-	_target "libSystem.a")					|| return 2
+	(DESTDIR= \
+	PREFIX="$TOOLDIR" \
+	SUBDIRS="System/src/libSystem/libSystem-git/include
+		System/src/libSystem/libSystem-git/data" \
+	_target "clean" "install")				|| return 2
+	(DESTDIR= \
+	PREFIX="$TOOLDIR" \
+	SUBDIRS="System/src/libSystem/libSystem-git/src" \
+	OBJDIR="$TOOLDIR/lib/" \
+	_target "clean" "$TOOLDIR/lib/libSystem.a")		|| return 2
 }
 
 _bootstrap_makefiles()
@@ -530,10 +544,14 @@ fi
 [ -z "$TARGET_SYSTEM" ] && TARGET_SYSTEM="$SYSTEM"
 [ -z "$TARGET" ] && TARGET="$TARGET_SYSTEM-$TARGET_MACHINE"
 
+#initialize the target
+[ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$TARGET"
+[ -z "$TOOLDIR" ] && TOOLDIR="$PWD/tooldir-$TARGET"
+
 #check for bootstrap
-[ -r "System/src/libSystem/libSystem-git/src/libSystem.a" ] \
+[ -r "$TOOLDIR/lib/libSystem.a" ] \
 	|| BOOTSTRAP="$BOOTSTRAP libsystem_static"
-[ -x "Apps/Devel/src/configure/configure-git/src/configure$EXEEXT" ] \
+[ -x "$TOOLDIR/bin/configure$EXEEXT" ] \
 	|| BOOTSTRAP="$BOOTSTRAP configure_static"
 [ -f "Apps/Devel/src/scripts/Makefile" ] \
 	|| BOOTSTRAP="$BOOTSTRAP makefiles"
@@ -550,9 +568,7 @@ for method in $BOOTSTRAP; do
 	fi
 done
 
-#initialize the target
-[ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$TARGET"
-
+#import the target
 if [ ! -f "Apps/Devel/src/scripts/scripts-git/targets/$TARGET" ]; then
 	_warning "$TARGET: Unsupported target" 1>&2
 else
@@ -561,7 +577,7 @@ fi
 
 #initialize variables
 [ -z "$PREFIX" ] && PREFIX="/usr/local"
-[ -z "$CONFIGURE" ] && CONFIGURE="$PWD/Apps/Devel/src/configure/configure-git/src/configure$EXEEXT -O DeforaOS -p $PREFIX"
+[ -z "$CONFIGURE" ] && CONFIGURE="$TOOLDIR/bin/configure$EXEEXT -O DeforaOS -p $PREFIX"
 [ -z "$IMAGE_TYPE" ] && IMAGE_TYPE="image"
 [ -z "$IMAGE_FILE" ] && IMAGE_FILE="$VENDOR-$IMAGE_TYPE.img"
 [ -z "$UID" ] && UID=$(id -u)
