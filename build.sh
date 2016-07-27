@@ -189,19 +189,17 @@ target_bootstrap()
 	#build and install essential libraries and tools
 	CONFIGURE=
 	FAILED=
-	PATH="$PATH:$PREFIX/bin"
-	PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
-	_bootstrap_libsystem					|| return 2
-	_bootstrap_configure					|| return 2
-	_bootstrap_makefiles					|| return 2
-	_bootstrap_system		|| FAILED="$FAILED System"
-	_bootstrap_devel		|| FAILED="$FAILED Devel"
-	_bootstrap_database		|| FAILED="$FAILED Database"
-	_bootstrap_graphics		|| FAILED="$FAILED Graphics"
-	_bootstrap_desktop		|| FAILED="$FAILED Desktop"
-	_bootstrap_network		|| FAILED="$FAILED Network"
-	_bootstrap_unix			|| FAILED="$FAILED UNIX"
-	_bootstrap_documentation	|| FAILED="$FAILED Documentation"
+	_bootstrap_wrap libsystem				|| return 2
+	_bootstrap_wrap configure				|| return 2
+	_bootstrap_wrap makefiles				|| return 2
+	_bootstrap_wrap system		|| FAILED="$FAILED System"
+	_bootstrap_wrap devel		|| FAILED="$FAILED Devel"
+	_bootstrap_wrap database	|| FAILED="$FAILED Database"
+	_bootstrap_wrap graphics	|| FAILED="$FAILED Graphics"
+	_bootstrap_wrap desktop		|| FAILED="$FAILED Desktop"
+	_bootstrap_wrap network		|| FAILED="$FAILED Network"
+	_bootstrap_wrap unix		|| FAILED="$FAILED UNIX"
+	_bootstrap_wrap documentation	|| FAILED="$FAILED Documentation"
 	[ -z "$FAILED" ]					&& return 0
 	echo "Failed to build:$FAILED" 1>&2
 	return 2
@@ -209,7 +207,7 @@ target_bootstrap()
 
 _bootstrap_configure()
 {
-	(SUBDIRS="Apps/Devel/src/configure/configure-git"
+	(SUBDIRS="Apps/Devel/src/configure/configure-git" \
 	_target "clean" "install")				|| return 2
 }
 
@@ -217,10 +215,10 @@ _bootstrap_configure_static()
 {
 	(SUBDIRS="Apps/Devel/src/configure" _target "clean" "patch") \
 								|| return 2
-	(CPPFLAGS="-I ../../../../../../System/src/libSystem/libSystem-git/include"
-	CFLAGSF="-W"
-	LDFLAGSF="../../../../../../System/src/libSystem/libSystem-git/src/libSystem.a"
-	SUBDIRS="Apps/Devel/src/configure/configure-git"
+	(CPPFLAGS="-I ../../../../../../System/src/libSystem/libSystem-git/include" \
+	CFLAGSF="-W" \
+	LDFLAGSF="../../../../../../System/src/libSystem/libSystem-git/src/libSystem.a" \
+	SUBDIRS="Apps/Devel/src/configure/configure-git" \
 	_target "all")						|| return 2
 }
 
@@ -274,14 +272,14 @@ _bootstrap_graphics()
 
 _bootstrap_libsystem()
 {
-	(SUBDIRS="System/src/libSystem/libSystem-git"
+	(SUBDIRS="System/src/libSystem/libSystem-git" \
 	_target "clean" "install")				|| return 2
 }
 
 _bootstrap_libsystem_static()
 {
 	(SUBDIRS="System/src/libSystem" _target "clean" "patch")|| return 2
-	(SUBDIRS="System/src/libSystem/libSystem-git/src"
+	(SUBDIRS="System/src/libSystem/libSystem-git/src" \
 	_target "libSystem.a")					|| return 2
 }
 
@@ -339,6 +337,18 @@ _bootstrap_unix()
 	return $RET
 }
 
+_bootstrap_wrap()
+{
+	method="$1"
+	path="$PATH"
+	pc_path="$PREFIX/lib/pkgconfig"
+
+	[ "$TARGET" != "$HOST" ] && path="$path:$PREFIX/bin"
+	(PATH="$path" \
+	PKG_CONFIG_PATH="$pc_path" \
+	"_bootstrap_$method")					|| return 2
+}
+
 
 #target_clean
 target_clean()
@@ -386,9 +396,9 @@ target_install()
 
 	[ -z "$pc_libdir" ] && pc_libdir="$DESTDIR$PREFIX/lib/pkgconfig"
 	[ -z "$pc_sysroot_dir" ] && pc_sysroot_dir="$DESTDIR"
-	(PKG_CONFIG_LIBDIR="$pc_libdir"
-	PKG_CONFIG_PATH="$pc_path"
-	PKG_CONFIG_SYSROOT_DIR="$pc_sysroot_dir"
+	(PKG_CONFIG_LIBDIR="$pc_libdir" \
+	PKG_CONFIG_PATH="$pc_path" \
+	PKG_CONFIG_SYSROOT_DIR="$pc_sysroot_dir" \
 	_install_do)						|| return 2
 }
 
@@ -401,11 +411,11 @@ _install_do()
 	for subdir in $SUBDIRS; do
 		case "$subdir" in
 			System/src/libc)
-				(SUBDIRS="$subdir"
+				(SUBDIRS="$subdir" \
 				_target "install")		|| return 2
 				;;
 			*)
-				(SUBDIRS="$subdir"
+				(SUBDIRS="$subdir" \
 				CC="$cc" _target "install")	|| return 2
 				;;
 		esac
