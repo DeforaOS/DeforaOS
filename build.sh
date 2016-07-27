@@ -191,6 +191,7 @@ target_bootstrap()
 	FAILED=
 	PATH="$PATH:$PREFIX/bin"
 	PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
+	_bootstrap_libsystem					|| return 2
 	_bootstrap_configure					|| return 2
 	_bootstrap_makefiles					|| return 2
 	_bootstrap_system		|| FAILED="$FAILED System"
@@ -208,8 +209,8 @@ target_bootstrap()
 
 _bootstrap_configure()
 {
-	(SUBDIRS="Apps/Devel/src/configure" _target "clean" "install") \
-								|| return 2
+	(SUBDIRS="Apps/Devel/src/configure/configure-git"
+	_target "clean" "install")				|| return 2
 }
 
 _bootstrap_configure_static()
@@ -273,8 +274,8 @@ _bootstrap_graphics()
 
 _bootstrap_libsystem()
 {
-	(SUBDIRS="System/src/libSystem" _target "clean" "install") \
-								|| return 2
+	(SUBDIRS="System/src/libSystem/libSystem-git"
+	_target "clean" "install")				|| return 2
 }
 
 _bootstrap_libsystem_static()
