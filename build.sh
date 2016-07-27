@@ -233,12 +233,19 @@ _bootstrap_database()
 _bootstrap_desktop()
 {
 	RET=0
+	S="Apps/Desktop/src/libDesktop
+		Apps/Desktop/src/Browser
+		Apps/Desktop/src/Locker
+		Apps/Desktop/src/Mailer
+		Apps/Desktop/src/Panel
+		Apps/Desktop/src/Phone
+		Apps/Desktop/src/Surfer"
 
-	#bootstrap libDesktop
-	(SUBDIRS="Apps/Desktop/src/libDesktop" _target "clean" "install") \
-								|| return 2
+	#bootstrap dependencies
+	for i in $S; do
+		(SUBDIRS="$i" _target "clean" "install")	|| return 2
+	done
 	#build all desktop applications
-	#FIXME some desktop applications depend on others being installed
 	(SUBDIRS="Apps/Desktop/src" _target "clean" "all")	|| return 2
 }
 
