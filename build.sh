@@ -381,35 +381,36 @@ _image_post()
 #target_install
 target_install()
 {
-	D="$DESTDIR"
-	P="$PREFIX"
-	S="$SUBDIRS"
-	L="$LDFLAGS"
-	PKL="$PKG_CONFIG_LIBDIR"
-	PKS="$PKG_CONFIG_SYSROOT_DIR"
+	pc_libdir="$PKG_CONFIG_LIBDIR"
+	pc_sysroot_dir="$PKG_CONFIG_SYSROOT_DIR"
 
-	[ -z "$PKG_CONFIG_LIBDIR" ] && PKG_CONFIG_LIBDIR="$D$P/lib/pkgconfig"
-	[ -z "$PKG_CONFIG_SYSROOT_DIR" ] && PKG_CONFIG_SYSROOT_DIR="$D"
-	export PKG_CONFIG_LIBDIR PKG_CONFIG_PATH PKG_CONFIG_SYSROOT_DIR
+	[ -z "$pc_libdir" ] && pc_libdir="$DESTDIR$PREFIX/lib/pkgconfig"
+	[ -z "$pc_sysroot_dir" ] && pc_sysroot_dir="$DESTDIR"
+	(PKG_CONFIG_LIBDIR="$pc_libdir"
+	PKG_CONFIG_PATH="$pc_path"
+	PKG_CONFIG_SYSROOT_DIR="$pc_sysroot_dir"
+	_install_do)						|| return 2
+}
+
+_install_do()
+{
+	cc="$CC"
+
+	[ -z "$cc" ] && cc="gcc"
+	cc="$cc -specs $DESTDIR$PREFIX/lib/gcc/deforaos-gcc.specs --sysroot $DESTDIR"
 	for subdir in $SUBDIRS; do
-		SUBDIRS="$subdir"
 		case "$subdir" in
 			System/src/libc)
-				_target "install"		|| return 2
+				(SUBDIRS="$subdir"
+				_target "install")		|| return 2
 				;;
 			*)
-				C="$CC"
-				[ -z "$C" ] && C="gcc"
-				CC="$C -specs $D$P/lib/gcc/deforaos-gcc.specs --sysroot $D"
-				_target "install"		|| return 2
-				CC="$C"
+				(SUBDIRS="$subdir"
+				CC="$cc" _target "install")	|| return 2
 				;;
 		esac
 	done
-	SUBDIRS="$S"
-	LDFLAGS="$L"
-	PKG_CONFIG_LIBDIR="$PKL"
-	PKG_CONFIG_SYSROOT_DIR="$PKS"
+	return 0
 }
 
 
@@ -462,7 +463,7 @@ while getopts "DvO:" name; do
 			VERBOSE=1
 			;;
 		O)
-			export "${OPTARG%%=*}"="${OPTARG#*=}"
+			eval "${OPTARG%%=*}"="${OPTARG#*=}"
 			;;
 		*)
 			_usage
