@@ -573,7 +573,7 @@ while [ $# -gt 0 ]; do
 	case "$target" in
 		all|bootstrap|clean|distclean|image|install|uninstall)
 			_info "Making target \"$target\" on $TARGET"
-			"target_$target"
+			("target_$target")
 			if [ $? -ne 0 ]; then
 				_error "$target: Could not complete target"
 				exit $?
