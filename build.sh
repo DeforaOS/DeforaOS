@@ -172,11 +172,10 @@ target_bootstrap()
 	CPPFLAGS="$BOOTSTRAP_CPPFLAGS"
 	CFLAGS="$BOOTSTRAP_CFLAGS"
 	LDFLAGS="$BOOTSTRAP_LDFLAGS"
-	CONFIGURE=
 	DESTDIR=
 	#build libSystem and configure
-	_bootstrap_libsystem_static				|| return 2
-	_bootstrap_configure_static				|| return 2
+	(CONFIGURE= _bootstrap_libsystem_static)		|| return 2
+	(CONFIGURE= _bootstrap_configure_static)		|| return 2
 	#re-generate the Makefiles
 	_bootstrap_makefiles					|| return 2
 	#warn the user
@@ -191,7 +190,6 @@ target_bootstrap()
 	echo
 	read ignore						|| return 0
 	#build and install essential libraries and tools
-	CONFIGURE=
 	FAILED=
 	_bootstrap_wrap libsystem				|| return 2
 	_bootstrap_wrap configure				|| return 2
