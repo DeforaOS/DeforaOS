@@ -425,7 +425,7 @@ target_install()
 	[ -z "$pc_libdir" ] && pc_libdir="$DESTDIR$PREFIX/lib/pkgconfig"
 	[ -z "$pc_sysroot_dir" ] && pc_sysroot_dir="$DESTDIR"
 	(PKG_CONFIG_LIBDIR="$pc_libdir" \
-	PKG_CONFIG_PATH="$pc_path" \
+	PKG_CONFIG_PATH="$PKG_CONFIG_PATH" \
 	PKG_CONFIG_SYSROOT_DIR="$pc_sysroot_dir" \
 	_install_do)						|| return 2
 }
