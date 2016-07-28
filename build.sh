@@ -210,7 +210,7 @@ target_bootstrap()
 
 _bootstrap_configure()
 {
-	(SUBDIRS="Apps/Devel/src/configure/configure-git" \
+	(SUBDIRS="Apps/Devel/src/configure" \
 	_target "clean" "install")				|| return 2
 }
 
@@ -284,7 +284,7 @@ _bootstrap_graphics()
 
 _bootstrap_libsystem()
 {
-	(SUBDIRS="System/src/libSystem/libSystem-git" \
+	(SUBDIRS="System/src/libSystem" \
 	_target "clean" "install")				|| return 2
 }
 
