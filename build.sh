@@ -136,6 +136,7 @@ _info()
 _target()
 {
 	_MAKE="$MAKE"
+	[ ! -z "$CONFIGURE" ] && _MAKE="CONFIGURE=\"$CONFIGURE\" $_MAKE DESTDIR=\"$DESTDIR\""
 	[ ! -z "$DESTDIR" ] && _MAKE="$_MAKE DESTDIR=\"$DESTDIR\""
 	[ ! -z "$PREFIX" ] && _MAKE="$_MAKE PREFIX=\"$PREFIX\""
 	[ ! -z "$CC" ] && _MAKE="$_MAKE CC=\"$CC\""
