@@ -147,11 +147,13 @@ _target()
 	[ ! -z "$LD" ] && _MAKE="$_MAKE LD=\"$LD\""
 	[ ! -z "$LDFLAGS" ] && _MAKE="$_MAKE LDFLAGS=\"$LDFLAGS\""
 	[ ! -z "$LDFLAGSF" ] && _MAKE="$_MAKE LDFLAGSF=\"$LDFLAGSF\""
-	[ ! -z "$OBJDIR" ] && _MAKE="$_MAKE OBJDIR=\"$OBJDIR\""
 	while [ $# -gt 0 ]; do
 		for i in $SUBDIRS; do
 			_info "Making target \"$1\" in \"$i\""
-			(cd "$i" && eval $_MAKE "$1")		|| return 2
+			([ -z "$OBJDIR" ] || $MKDIR -- "$OBJDIR/$i") \
+								|| return 2
+			([ ! -z "$OBJDIR" ] && _MAKE="$_MAKE OBJDIR=\"$OBJDIR/$i/\""
+			cd "$i" && eval $_MAKE "$1")		|| return 2
 		done
 		shift
 	done
@@ -546,6 +548,7 @@ fi
 
 #initialize the target
 [ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$TARGET"
+[ -z "$OBJDIR" ] && OBJDIR="$PWD/objdir-$TARGET"
 [ -z "$TOOLDIR" ] && TOOLDIR="$PWD/tooldir-$TARGET"
 
 #check for bootstrap
