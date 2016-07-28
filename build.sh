@@ -307,8 +307,8 @@ _bootstrap_libsystem_static()
 
 _bootstrap_makefiles()
 {
-	$DEBUG "Apps/Devel/src/configure/configure-git/src/configure$EXEEXT" \
-		-v -p "$PREFIX" "System/src" "Apps" "Library"	|| return 2
+	$DEBUG "$TOOLDIR/bin/configure$EXEEXT" -v -p "$PREFIX" \
+		"System/src" "Apps" "Library"			|| return 2
 }
 
 _bootstrap_network()
