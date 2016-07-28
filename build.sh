@@ -148,14 +148,17 @@ _target()
 	[ ! -z "$LDFLAGS" ] && _MAKE="$_MAKE LDFLAGS=\"$LDFLAGS\""
 	[ ! -z "$LDFLAGSF" ] && _MAKE="$_MAKE LDFLAGSF=\"$LDFLAGSF\""
 	while [ $# -gt 0 ]; do
-		for i in $SUBDIRS; do
-			_info "Making target \"$1\" in \"$i\""
-			([ -z "$OBJDIR" ] || $MKDIR -- "$OBJDIR/$i") \
-								|| return 2
-			([ ! -z "$OBJDIR" ] && _MAKE="$_MAKE OBJDIR=\"$OBJDIR/$i/\""
-			cd "$i" && eval $_MAKE "$1")		|| return 2
-		done
+		target="$1"
 		shift
+
+		for subdir in $SUBDIRS; do
+			_info "Making target \"$target\" in \"$subdir\""
+			([ -z "$OBJDIR" ] || $MKDIR -- "$OBJDIR/$subdir") \
+								|| return 2
+			([ ! -z "$OBJDIR" ] &&
+				_MAKE="$_MAKE OBJDIR=\"$OBJDIR/$subdir/\""
+			cd "$subdir" && eval $_MAKE "$target")	|| return 2
+		done
 	done
 	return 0
 }
