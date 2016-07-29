@@ -135,32 +135,44 @@ _info()
 #target
 _target()
 {
-	_MAKE="$MAKE"
-	[ ! -z "$CONFIGURE" ] && _MAKE="CONFIGURE=\"$CONFIGURE\" $_MAKE DESTDIR=\"$DESTDIR\""
-	[ ! -z "$DESTDIR" ] && _MAKE="$_MAKE DESTDIR=\"$DESTDIR\""
-	[ ! -z "$PREFIX" ] && _MAKE="$_MAKE PREFIX=\"$PREFIX\""
-	[ ! -z "$CC" ] && _MAKE="$_MAKE CC=\"$CC\""
-	[ ! -z "$CPPFLAGS" ] && _MAKE="$_MAKE CPPFLAGS=\"$CPPFLAGS\""
-	[ ! -z "$CPPFLAGSF" ] && _MAKE="$_MAKE CPPFLAGSF=\"$CPPFLAGSF\""
-	[ ! -z "$CFLAGS" ] && _MAKE="$_MAKE CFLAGS=\"$CFLAGS\""
-	[ ! -z "$CFLAGSF" ] && _MAKE="$_MAKE CFLAGSF=\"$CFLAGSF\""
-	[ ! -z "$LD" ] && _MAKE="$_MAKE LD=\"$LD\""
-	[ ! -z "$LDFLAGS" ] && _MAKE="$_MAKE LDFLAGS=\"$LDFLAGS\""
-	[ ! -z "$LDFLAGSF" ] && _MAKE="$_MAKE LDFLAGSF=\"$LDFLAGSF\""
 	while [ $# -gt 0 ]; do
 		target="$1"
 		shift
 
 		for subdir in $SUBDIRS; do
-			_info "Making target \"$target\" in \"$subdir\""
-			([ -z "$OBJDIR" ] || $MKDIR -- "$OBJDIR/$subdir") \
-								|| return 2
-			([ ! -z "$OBJDIR" ] &&
-				_MAKE="$_MAKE OBJDIR=\"$OBJDIR/$subdir/\""
-			cd "$subdir" && eval $_MAKE "$target")	|| return 2
+			objdir="$OBJDIR"
+
+			if [ ! -z "$objdir" ]; then
+				$MKDIR -- "$objdir/$subdir"	|| return 2
+				objdir="$objdir/$subdir/"
+			fi
+			(OBJDIR="$objdir" \
+			_target_subdir "$target" "$subdir")	|| return 2
 		done
 	done
 	return 0
+}
+
+_target_subdir()
+{
+	target="$1"
+	subdir="$2"
+	make="$MAKE"
+
+	_info "Making target \"$target\" in \"$subdir\""
+	[ ! -z "$CONFIGURE" ] && make="CONFIGURE=\"$CONFIGURE\" $make DESTDIR=\"$DESTDIR\""
+	[ ! -z "$DESTDIR" ] && make="$make DESTDIR=\"$DESTDIR\""
+	[ ! -z "$PREFIX" ] && make="$make PREFIX=\"$PREFIX\""
+	[ ! -z "$CC" ] && make="$make CC=\"$CC\""
+	[ ! -z "$CPPFLAGS" ] && make="$make CPPFLAGS=\"$CPPFLAGS\""
+	[ ! -z "$CPPFLAGSF" ] && make="$make CPPFLAGSF=\"$CPPFLAGSF\""
+	[ ! -z "$CFLAGS" ] && make="$make CFLAGS=\"$CFLAGS\""
+	[ ! -z "$CFLAGSF" ] && make="$make CFLAGSF=\"$CFLAGSF\""
+	[ ! -z "$LD" ] && make="$make LD=\"$LD\""
+	[ ! -z "$LDFLAGS" ] && make="$make LDFLAGS=\"$LDFLAGS\""
+	[ ! -z "$LDFLAGSF" ] && make="$make LDFLAGSF=\"$LDFLAGSF\""
+	[ ! -z "$OBJDIR" ] && make="$make OBJDIR=\"$OBJDIR/\""
+	(cd "$subdir" && eval $make "$target")
 }
 
 
@@ -224,13 +236,15 @@ _bootstrap_configure_static()
 {
 	(SUBDIRS="Apps/Devel/src/configure" _target "clean" "patch") \
 								|| return 2
+	#XXX _target_subdir() should not be visible
 	(DESTDIR= \
 	PREFIX="$TOOLDIR" \
 	CPPFLAGS="-I $TOOLDIR/include" \
 	CFLAGSF="-W" \
 	LDFLAGSF="$TOOLDIR/lib/libSystem.a" \
-	SUBDIRS="Apps/Devel/src/configure/configure-git" \
-	_target "install")					|| return 2
+	OBJDIR= \
+	_target_subdir "install" "Apps/Devel/src/configure/configure-git") \
+								|| return 2
 }
 
 _bootstrap_database()
@@ -301,12 +315,14 @@ _bootstrap_libsystem_static()
 	PREFIX="$TOOLDIR" \
 	SUBDIRS="System/src/libSystem/libSystem-git/include
 		System/src/libSystem/libSystem-git/data" \
-	_target "clean" "install")				|| return 2
+	OBJDIR= \
+	_target "install")					|| return 2
+	#XXX _target_subdir() should not be visible
 	(DESTDIR= \
 	PREFIX="$TOOLDIR" \
-	SUBDIRS="System/src/libSystem/libSystem-git/src" \
-	OBJDIR="$TOOLDIR/lib/" \
-	_target "clean" "$TOOLDIR/lib/libSystem.a")		|| return 2
+	OBJDIR="$TOOLDIR/lib" \
+	_target_subdir "$TOOLDIR/lib/libSystem.a" "System/src/libSystem/libSystem-git/src") \
+								|| return 2
 }
 
 _bootstrap_makefiles()
