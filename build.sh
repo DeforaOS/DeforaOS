@@ -22,13 +22,12 @@ BOOTSTRAP_CFLAGS=
 BOOTSTRAP_CPPFLAGS=
 BOOTSTRAP_LDFLAGS=
 CFLAGS=
-CFLAGSF=
 CPATH=
 CPPFLAGS=
-CPPFLAGSF=
 DESTDIR=
 EXEEXT=
 LDFLAGS=
+#XXX remove
 LDFLAGSF=
 DESTDIR=
 EXEEXT=
@@ -165,9 +164,7 @@ _target_subdir()
 	[ ! -z "$PREFIX" ] && make="$make PREFIX=\"$PREFIX\""
 	[ ! -z "$CC" ] && make="$make CC=\"$CC\""
 	[ ! -z "$CPPFLAGS" ] && make="$make CPPFLAGS=\"$CPPFLAGS\""
-	[ ! -z "$CPPFLAGSF" ] && make="$make CPPFLAGSF=\"$CPPFLAGSF\""
 	[ ! -z "$CFLAGS" ] && make="$make CFLAGS=\"$CFLAGS\""
-	[ ! -z "$CFLAGSF" ] && make="$make CFLAGSF=\"$CFLAGSF\""
 	[ ! -z "$LD" ] && make="$make LD=\"$LD\""
 	[ ! -z "$LDFLAGS" ] && make="$make LDFLAGS=\"$LDFLAGS\""
 	[ ! -z "$LDFLAGSF" ] && make="$make LDFLAGSF=\"$LDFLAGSF\""
@@ -240,7 +237,6 @@ _bootstrap_configure_static()
 	(DESTDIR= \
 	PREFIX="$TOOLDIR" \
 	CPPFLAGS="-I $TOOLDIR/include" \
-	CFLAGSF="-W" \
 	LDFLAGSF="$TOOLDIR/lib/libSystem.a" \
 	OBJDIR= \
 	_target_subdir "install" "Apps/Devel/src/configure/configure-git") \
