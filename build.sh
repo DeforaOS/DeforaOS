@@ -239,7 +239,7 @@ _bootstrap_configure_static()
 	CPPFLAGS="-I $TOOLDIR/include" \
 	LDFLAGSF="$TOOLDIR/lib/libSystem.a" \
 	OBJDIR= \
-	_target_subdir "install" "Apps/Devel/src/configure/configure-git") \
+	_target_subdir "install" "Apps/Devel/src/configure/configure-git/src") \
 								|| return 2
 }
 
