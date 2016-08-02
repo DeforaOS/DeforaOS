@@ -45,7 +45,7 @@ SOEXT=
 SYSTEM=
 TARGET=
 TARGET_MACHINE=
-TARGET_SYSTEM=
+TARGET_SYSTEM="DeforaOS"
 TOOLDIR=
 VENDOR="DeforaOS"
 VERBOSE=0
@@ -595,7 +595,7 @@ fi
 
 #initialize variables
 [ -z "$PREFIX" ] && PREFIX="/usr/local"
-[ -z "$CONFIGURE" ] && CONFIGURE="$TOOLDIR/bin/configure$EXEEXT -O DeforaOS -p $PREFIX"
+[ -z "$CONFIGURE" ] && CONFIGURE="$TOOLDIR/bin/configure$EXEEXT -O \"$TARGET_SYSTEM\" -p \"$PREFIX\""
 [ -z "$IMAGE_TYPE" ] && IMAGE_TYPE="image"
 [ -z "$IMAGE_FILE" ] && IMAGE_FILE="$VENDOR-$IMAGE_TYPE.img"
 [ -z "$UID" ] && UID=$(id -u)
