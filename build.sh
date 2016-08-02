@@ -562,9 +562,9 @@ fi
 [ -z "$TARGET" ] && TARGET="$TARGET_SYSTEM-$TARGET_MACHINE"
 
 #initialize the target
-[ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$TARGET"
-[ -z "$OBJDIR" ] && OBJDIR="$PWD/objdir-$TARGET"
-[ -z "$TOOLDIR" ] && TOOLDIR="$PWD/tooldir-$TARGET"
+[ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$HOST"
+[ -z "$OBJDIR" ] && OBJDIR="$PWD/objdir-$HOST"
+[ -z "$TOOLDIR" ] && TOOLDIR="$PWD/tooldir-$HOST"
 
 #check for bootstrap
 [ -r "$TOOLDIR/lib/libSystem.a" ] \
