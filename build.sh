@@ -452,7 +452,7 @@ _install_do()
 	cc="$CC"
 
 	[ -z "$cc" ] && cc="gcc"
-	cc="$cc -specs $DESTDIR$PREFIX/lib/gcc/deforaos-gcc.specs --sysroot $DESTDIR"
+	cc="$DESTDIR$PREFIX/bin/deforaos-gcc --sysroot \"$DESTDIR\""
 	for subdir in $SUBDIRS; do
 		case "$subdir" in
 			System/src/libc)
