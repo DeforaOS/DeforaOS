@@ -73,6 +73,7 @@ DEVNULL="/dev/null"
 DEVZERO="/dev/zero"
 SUBDIRS="System/src/libc
 	System/src/libSystem
+	System/src/libMarshall
 	System/src/libApp
 	System/src/Loader
 	System/src/Init
