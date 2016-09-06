@@ -40,6 +40,14 @@ TAR='tar'
 
 
 #functions
+#error
+_error()
+{
+	echo "$PROGNAME: error: $@" 1>&2
+	return 2
+}
+
+
 #target_configure
 _target_configure()
 {
@@ -151,8 +159,8 @@ _warn()
 
 #main
 if [ ! -f ./config.sh ]; then
-	echo "$PROGNAME: Must be called from a project folder (config.sh not found)" 1>&2
-	exit 2
+	_error "Must be called from a project folder (config.sh not found)"
+	exit $?
 fi
 . ./config.sh
 
