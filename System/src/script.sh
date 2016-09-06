@@ -58,13 +58,25 @@ _target_configure()
 _target_download()
 {
 	case "$URL" in
-		git://*|http://*.git|https://*.git|*.git)
+		git://*|http://*.git)
+			if [ ! -d "$PACKAGE-$VERSION/.git" ]; then
+				_warn "$URL: Repository access is not encrypted"
+				$GIT clone -n "$URL" "$PACKAGE-$VERSION"
+			fi
+			;;
+		https://*.git|*.git)
 			if [ ! -d "$PACKAGE-$VERSION/.git" ]; then
 				$GIT clone -n "$URL" "$PACKAGE-$VERSION"
 			fi
 			;;
-		ftp://*|ftps://*|http://*|https://*)
+		ftps://*|https://*)
 			[ ! -f "$PACKAGE-$VERSION$EXT" ] && $FETCH "$URL"
+			;;
+		ftp://*|http://*)
+			if [ ! -f "$PACKAGE-$VERSION$EXT" ]; then
+				_warn "$URL: Repository access is not encrypted"
+				$FETCH "$URL"
+			fi
 			;;
 	esac
 }
@@ -127,6 +139,13 @@ _usage()
 	echo "  patch" 1>&2
 	echo "  uninstall" 1>&2
 	return 1
+}
+
+
+#warn
+_warn()
+{
+	echo "$PROGNAME: warning: $@" 1>&2
 }
 
 
