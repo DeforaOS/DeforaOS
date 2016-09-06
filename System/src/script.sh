@@ -114,6 +114,9 @@ _target_patch()
 _usage()
 {
 	echo "Usage: $PROGNAME [-c|-i|-u][-O name=value...][-P prefix] target..." 1>&2
+	echo "  -c	Perform the \"clean\" target" 1>&2
+	echo "  -i	Perform the \"install\" target" 1>&2
+	echo "  -u	Perform the \"uninstall\" target" 1>&2
 	echo "Available targets:" 1>&2
 	echo "  build" 1>&2
 	echo "  configure" 1>&2
