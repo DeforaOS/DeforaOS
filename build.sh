@@ -75,6 +75,7 @@ SUBDIRS="System/src/libc
 	System/src/libSystem
 	System/src/libMarshall
 	System/src/libApp
+	System/src/AppInterfaces
 	System/src/libParser
 	System/src/Loader
 	System/src/Init
