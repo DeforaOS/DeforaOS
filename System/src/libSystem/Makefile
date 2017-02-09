@@ -20,7 +20,7 @@ configure: patch
 	../script.sh -P "$(PREFIX)" -- "configure"
 
 download:
-	../script.sh -O URL=http://git.defora.org/DeforaOS/$(PACKAGE).git -P "$(PREFIX)" -- "download"
+	../script.sh -O URL=https://git.defora.org/DeforaOS/$(PACKAGE).git -P "$(PREFIX)" -- "download"
 
 extract: download
 	../script.sh -P "$(PREFIX)" -- "extract"
@@ -32,7 +32,7 @@ clean:
 	$(RM) -- $(build_OBJS) $(configure_OBJS) $(download_OBJS) $(extract_OBJS) $(patch_OBJS)
 	../script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)build"
 	../script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)configure"
-	../script.sh -O URL=http://git.defora.org/DeforaOS/$(PACKAGE).git -c -P "$(PREFIX)" -- "$(OBJDIR)download"
+	../script.sh -O URL=https://git.defora.org/DeforaOS/$(PACKAGE).git -c -P "$(PREFIX)" -- "$(OBJDIR)download"
 	../script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)extract"
 	../script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)patch"
 
