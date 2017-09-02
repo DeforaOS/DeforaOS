@@ -560,9 +560,14 @@ if [ -z "$SYSTEM" ]; then
 	esac
 fi
 [ -z "$HOST" ] && HOST="$SYSTEM-$MACHINE"
-[ -z "$TARGET_MACHINE" ] && TARGET_MACHINE="$MACHINE"
-[ -z "$TARGET_SYSTEM" ] && TARGET_SYSTEM="$SYSTEM"
-[ -z "$TARGET" ] && TARGET="$TARGET_SYSTEM-$TARGET_MACHINE"
+if [ -n "$TARGET" ]; then
+	[ -z "$TARGET_MACHINE" ] && TARGET_MACHINE="${TARGET##*-}"
+	[ -z "$TARGET_SYSTEM" ] && TARGET_SYSTEM="${TARGET%-*}"
+else
+	[ -z "$TARGET_MACHINE" ] && TARGET_MACHINE="$MACHINE"
+	[ -z "$TARGET_SYSTEM" ] && TARGET_SYSTEM="$SYSTEM"
+	[ -z "$TARGET" ] && TARGET="$TARGET_SYSTEM-$TARGET_MACHINE"
+fi
 
 #initialize the target
 [ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$HOST"
