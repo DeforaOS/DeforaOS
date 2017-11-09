@@ -239,6 +239,10 @@ _bootstrap_configure_static()
 	#XXX _target_subdir() should not be visible
 	(DESTDIR= \
 	PREFIX="$TOOLDIR" \
+	_target_subdir "install" "Apps/Devel/src/configure/configure-git/data") \
+								|| return 2
+	(DESTDIR= \
+	PREFIX="$TOOLDIR" \
 	CPPFLAGS="-I $TOOLDIR/include" \
 	LDFLAGSF="$TOOLDIR/lib/libSystem.a" \
 	OBJDIR= \
