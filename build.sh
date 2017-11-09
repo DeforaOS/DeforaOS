@@ -234,11 +234,12 @@ _bootstrap_configure()
 
 _bootstrap_configure_static()
 {
-	(SUBDIRS="Apps/Devel/src/configure" _target "clean" "patch") \
+	(SUBDIRS="Apps/Devel/src/configure" OBJDIR= _target "clean" "patch") \
 								|| return 2
 	#XXX _target_subdir() should not be visible
 	(DESTDIR= \
 	PREFIX="$TOOLDIR" \
+	OBJDIR= \
 	_target_subdir "install" "Apps/Devel/src/configure/configure-git/data") \
 								|| return 2
 	(DESTDIR= \
@@ -313,7 +314,8 @@ _bootstrap_libsystem()
 
 _bootstrap_libsystem_static()
 {
-	(SUBDIRS="System/src/libSystem" _target "clean" "patch")|| return 2
+	(SUBDIRS="System/src/libSystem" OBJDIR= _target "clean" "patch") \
+								|| return 2
 	(DESTDIR= \
 	PREFIX="$TOOLDIR" \
 	SUBDIRS="System/src/libSystem/libSystem-git/include
