@@ -26,10 +26,10 @@
 
 #variables
 DESTDIR="$PWD/destdir"
-EXT=".tar.gz"
 GIT_BRANCH='master'
 PREFIX="/usr/local"
 PROGNAME="script.sh"
+TARGZEXT=".tar.gz"
 #executables
 [ -z "$CONFIGURE" ] && CONFIGURE='configure -v'
 FETCH='wget'
@@ -78,10 +78,10 @@ _target_download()
 			fi
 			;;
 		ftps://*|https://*)
-			[ ! -f "$PACKAGE-$VERSION$EXT" ] && $FETCH "$URL"
+			[ ! -f "$PACKAGE-$VERSION$TARGZEXT" ] && $FETCH "$URL"
 			;;
 		ftp://*|http://*)
-			if [ ! -f "$PACKAGE-$VERSION$EXT" ]; then
+			if [ ! -f "$PACKAGE-$VERSION$TARGZEXT" ]; then
 				_warn "$URL: Repository access is not encrypted"
 				$FETCH "$URL"
 			fi
@@ -100,7 +100,7 @@ _target_extract()
 	esac
 	case "$URL" in
 		ftp://*|ftps://*|http://*|https://*)
-			$TAR -xzf "$PACKAGE-$VERSION$EXT"
+			$TAR -xzf "$PACKAGE-$VERSION$TARGZEXT"
 			;;
 	esac
 }
