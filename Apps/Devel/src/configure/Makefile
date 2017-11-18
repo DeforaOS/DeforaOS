@@ -7,6 +7,7 @@ DESTDIR	=
 RM	= rm -f
 LN	= ln -f
 TAR	= tar
+TGZEXT	= .tar.gz
 MKDIR	= mkdir -m 0755 -p
 INSTALL	= install
 
@@ -42,14 +43,14 @@ distclean: clean
 dist:
 	$(RM) -r -- $(OBJDIR)$(PACKAGE)-$(VERSION)
 	$(LN) -s -- "$$PWD" $(OBJDIR)$(PACKAGE)-$(VERSION)
-	@cd $(OBJDIR). && $(TAR) -czvf $(PACKAGE)-$(VERSION).tar.gz -- \
+	@cd $(OBJDIR). && $(TAR) -czvf $(PACKAGE)-$(VERSION)$(TGZEXT) -- \
 		$(PACKAGE)-$(VERSION)/Makefile \
 		$(PACKAGE)-$(VERSION)/config.sh \
 		$(PACKAGE)-$(VERSION)/project.conf
 	$(RM) -- $(OBJDIR)$(PACKAGE)-$(VERSION)
 
 distcheck: dist
-	$(TAR) -xzvf $(OBJDIR)$(PACKAGE)-$(VERSION).tar.gz
+	$(TAR) -xzvf $(OBJDIR)$(PACKAGE)-$(VERSION)$(TGZEXT)
 	$(MKDIR) -- $(PACKAGE)-$(VERSION)/objdir
 	$(MKDIR) -- $(PACKAGE)-$(VERSION)/destdir
 	cd "$(PACKAGE)-$(VERSION)" && $(MAKE) OBJDIR="$$PWD/objdir/"
