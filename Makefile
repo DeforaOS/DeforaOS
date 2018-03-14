@@ -23,7 +23,7 @@ subdirs:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE)) || exit; done
 
 bootstrap:
-	./build.sh -v -O MAKE="$(MAKE)" -O PREFIX="$(PREFIX)" bootstrap
+	$(BUILDSH) -O MAKE="$(MAKE)" -O PREFIX="$(PREFIX)" bootstrap
 
 clean:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean) || exit; done
