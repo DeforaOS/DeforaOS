@@ -66,7 +66,7 @@ The project can be found and contacted at:
 
 * Web:     https://www.defora.org/
 * e-mail:  info@defora.org or via mailing-lists at https://lists.defora.org/
-* Twitter: @DeforaOS
+* Twitter: [@DeforaOS](https://twitter.com/DeforaOS)
 
 The project accepts donations at the following address:
 
