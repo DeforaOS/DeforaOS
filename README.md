@@ -37,7 +37,7 @@ Getting started
 
 The current requirements to build and install DeforaOS are:
 
-* POSIX-compliant Operating System (NetBSD, Linux, other BSDs...)
+* POSIX-compliant Operating System (NetBSD, Linux, mac OS, other BSDs...)
 * a working C compiler and assembler (GCC, LLVM...)
 * Git, to download and synchronize the components as required
 
