@@ -1,5 +1,5 @@
 #$Id$
-#Copyright (c) 2004-2016 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2004-2018 Pierre Pronchery <khorben@defora.org>
 #This file is part of the DeforaOS Project
 
 
