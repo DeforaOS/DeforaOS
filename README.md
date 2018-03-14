@@ -43,18 +43,21 @@ The current requirements to build and install DeforaOS are:
 
 Run the following command to configure the sources for the project and compile
 the essential tools to build it:
-
+```
   $ make bootstrap
+```
 
 Once this done, run the following command to automatically download and build
 its different components:
-
+```
   $ make
+```
 
 Alternatively, a helper script is available, in order to build bootable images
 of the Operating System:
-
+```
   $ build.sh image
+```
 
 Contact information
 -------------------
@@ -67,5 +70,5 @@ The project can be found and contacted at:
 
 The project accepts donations at the following address:
 
-* Bitcoin: 1yKwy1JqXYkXX8WQtWQK4iHodXWiqWivD
+* Bitcoin: `1yKwy1JqXYkXX8WQtWQK4iHodXWiqWivD`
 
