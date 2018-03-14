@@ -31,11 +31,11 @@ patch: extract
 
 clean:
 	$(RM) -- $(build_OBJS) $(configure_OBJS) $(download_OBJS) $(extract_OBJS) $(patch_OBJS)
-	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)build"
-	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)configure"
-	../../../../System/src/script.sh -O URL=https://git.defora.org/DeforaOS/$(PACKAGE).git -c -P "$(PREFIX)" -- "$(OBJDIR)download"
-	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)extract"
-	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)patch"
+	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "build"
+	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "configure"
+	../../../../System/src/script.sh -O URL=https://git.defora.org/DeforaOS/$(PACKAGE).git -c -P "$(PREFIX)" -- "download"
+	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "extract"
+	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "patch"
 
 distclean: clean
 	$(RM) -- $(TARGETS)
@@ -60,7 +60,7 @@ distcheck: dist
 	cd "$(PACKAGE)-$(VERSION)" && $(MAKE) dist
 	$(RM) -r -- $(PACKAGE)-$(VERSION)
 
-install: $(TARGETS)
+install: all
 	../../../../System/src/script.sh -P "$(DESTDIR)$(PREFIX)" -i -- "build"
 
 uninstall:
