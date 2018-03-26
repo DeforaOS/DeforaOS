@@ -67,7 +67,7 @@ The project can be found and contacted at:
 * IRC:     #DeforaOS on the [OFTC network](https://www.oftc.net/)
 * Twitter: [@DeforaOS](https://twitter.com/DeforaOS)
 
-The project accepts donations at the following address:
+Donations are accepted at the following address:
 
 * Bitcoin: `1yKwy1JqXYkXX8WQtWQK4iHodXWiqWivD`
 
