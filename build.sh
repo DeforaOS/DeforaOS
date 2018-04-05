@@ -555,6 +555,9 @@ fi
 if [ -z "$SYSTEM" ]; then
 	SYSTEM=$(uname -s)
 	case "$SYSTEM" in
+		Darwin)
+			LDFLAGS=" "
+			;;
 		MINGW32_NT-?.?)
 			[ -z "$EXEEXT" ] && EXEEXT=".exe"
 			[ -z "$SOEXT" ] && SOEXT=".dll"
