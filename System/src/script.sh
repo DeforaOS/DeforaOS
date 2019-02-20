@@ -30,6 +30,7 @@ GIT_BRANCH='master'
 PREFIX="/usr/local"
 PROGNAME="script.sh"
 TARGZEXT=".tar.gz"
+URL=
 #executables
 [ -z "$CONFIGURE" ] && CONFIGURE='configure -v'
 FETCH='wget'
