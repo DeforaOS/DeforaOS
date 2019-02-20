@@ -146,7 +146,7 @@ _target()
 
 			if [ ! -z "$objdir" ]; then
 				$MKDIR -- "$objdir/$subdir"	|| return 2
-				objdir="$objdir/$subdir/"
+				objdir="$objdir/$subdir"
 			fi
 			(OBJDIR="$objdir" \
 			_target_subdir "$target" "$subdir")	|| return 2
