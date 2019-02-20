@@ -245,7 +245,7 @@ _bootstrap_configure_static()
 	(DESTDIR= \
 	PREFIX="$TOOLDIR" \
 	CPPFLAGS="-I $TOOLDIR/include" \
-	LDFLAGSF="$TOOLDIR/lib/libSystem.a" \
+	LDFLAGSF="$OBJDIR/System/src/libSystem/libSystem-git/src/libSystem.a" \
 	OBJDIR= \
 	_target_subdir "install" "Apps/Devel/src/configure/configure-git/src") \
 								|| return 2
@@ -314,20 +314,17 @@ _bootstrap_libsystem()
 
 _bootstrap_libsystem_static()
 {
-	(SUBDIRS="System/src/libSystem" OBJDIR= _target "clean" "patch") \
-								|| return 2
+	subdir="System/src/libSystem/libSystem-git"
+
+	(SUBDIRS="System/src/libSystem" _target "clean" "patch")|| return 2
 	(DESTDIR= \
 	PREFIX="$TOOLDIR" \
-	SUBDIRS="System/src/libSystem/libSystem-git/include
-		System/src/libSystem/libSystem-git/data" \
-	OBJDIR= \
+	SUBDIRS="$subdir/include $subdir/data" \
 	_target "install")					|| return 2
-	#XXX _target_subdir() should not be visible
 	(DESTDIR= \
 	PREFIX="$TOOLDIR" \
-	OBJDIR="$TOOLDIR/lib" \
-	_target_subdir "$TOOLDIR/lib/libSystem.a" "System/src/libSystem/libSystem-git/src") \
-								|| return 2
+	SUBDIRS="$subdir/src" \
+	_target "$OBJDIR/$subdir/src/libSystem.a")		|| return 2
 }
 
 _bootstrap_makefiles()
@@ -584,7 +581,7 @@ fi
 [ -z "$TOOLDIR" ] && TOOLDIR="$PWD/tooldir-$HOST"
 
 #check for bootstrap
-[ -r "$TOOLDIR/lib/libSystem.a" ] \
+[ -r "$OBJDIR/System/src/libSystem/libSystem-git/src/libSystem.a" ] \
 	|| BOOTSTRAP="$BOOTSTRAP libsystem_static"
 [ -x "$TOOLDIR/bin/configure$EXEEXT" ] \
 	|| BOOTSTRAP="$BOOTSTRAP configure_static"
