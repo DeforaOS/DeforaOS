@@ -4,12 +4,20 @@
 
 
 
+#variables
+PACKAGE	= DeforaOS
+VERSION	= 0.0.0
 SUBDIRS	= System/src Apps Library
 PREFIX	= /usr/local
 DEVNULL	= /dev/null
 EXEEXT	=
+TGZEXT	= .tar.gz
+#executables
 BUILDSH	= ./build.sh -v
 CONFIGURE= ./Apps/Devel/src/configure/configure-git/src/configure$(EXEEXT)
+RM	= rm -f
+TAR	= tar
+MKDIR	= mkdir -m 0755 -p
 
 
 all:
@@ -34,6 +42,13 @@ dist:
 	$(CONFIGURE) -v
 	$(MAKE) dist
 
+distcheck: dist
+	$(TAR) -xzvf $(OBJDIR)$(PACKAGE)-$(VERSION)$(TGZEXT)
+	$(MKDIR) -- $(PACKAGE)-$(VERSION)/objdir
+	$(MKDIR) -- $(PACKAGE)-$(VERSION)/destdir
+	#TODO actually perform checks
+	$(RM) -r -- $(PACKAGE)-$(VERSION)
+
 distclean:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) distclean) || exit; done
 
@@ -43,4 +58,4 @@ install:
 uninstall:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) uninstall) || exit; done
 
-.PHONY: all subdirs bootstrap clean dist distclean install uninstall
+.PHONY: all subdirs clean dist distcheck distclean install uninstall bootstrap
