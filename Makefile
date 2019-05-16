@@ -33,6 +33,21 @@ subdirs:
 bootstrap:
 	$(BUILDSH) -O MAKE="$(MAKE)" -O PREFIX="$(PREFIX)" bootstrap
 
+build:
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) build) || break; done
+
+configure:
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) configure) || break; done
+
+download:
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) download) || break; done
+
+extract:
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) extract) || break; done
+
+patch:
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) patch) || break; done
+
 clean:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean) || exit; done
 
@@ -58,4 +73,4 @@ install:
 uninstall:
 	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) uninstall) || exit; done
 
-.PHONY: all subdirs clean dist distcheck distclean install uninstall bootstrap
+.PHONY: all subdirs clean distclean dist distcheck install uninstall bootstrap build configure download extract patch
