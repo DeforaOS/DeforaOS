@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2012-2016 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2012-2019 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -26,20 +26,29 @@
 
 #variables
 DESTDIR="$PWD/destdir"
-EXT=".tar.gz"
-GIT_BRANCH="master"
+GIT_BRANCH='master'
 PREFIX="/usr/local"
 PROGNAME="script.sh"
+TARGZEXT=".tar.gz"
+URL=
 #executables
 [ -z "$CONFIGURE" ] && CONFIGURE='configure -v'
 FETCH='wget'
 GIT='git'
-[ -n "$MAKE" ] || MAKE="make"
+[ -n "$MAKE" ] || MAKE='make'
 RM='rm -f'
 TAR='tar'
 
 
 #functions
+#error
+_error()
+{
+	echo "$PROGNAME: error: $@" 1>&2
+	return 2
+}
+
+
 #target_configure
 _target_configure()
 {
@@ -58,13 +67,25 @@ _target_configure()
 _target_download()
 {
 	case "$URL" in
-		git://*|http://*.git|https://*.git|*.git)
+		git://*|http://*.git)
+			if [ ! -d "$PACKAGE-$VERSION/.git" ]; then
+				_warn "$URL: Repository access is not encrypted"
+				$GIT clone -n "$URL" "$PACKAGE-$VERSION"
+			fi
+			;;
+		https://*.git|*.git)
 			if [ ! -d "$PACKAGE-$VERSION/.git" ]; then
 				$GIT clone -n "$URL" "$PACKAGE-$VERSION"
 			fi
 			;;
-		ftp://*|ftps://*|http://*|https://*)
-			[ ! -f "$PACKAGE-$VERSION$EXT" ] && $FETCH "$URL"
+		ftps://*|https://*)
+			[ ! -f "$PACKAGE-$VERSION$TARGZEXT" ] && $FETCH "$URL"
+			;;
+		ftp://*|http://*)
+			if [ ! -f "$PACKAGE-$VERSION$TARGZEXT" ]; then
+				_warn "$URL: Repository access is not encrypted"
+				$FETCH "$URL"
+			fi
 			;;
 	esac
 }
@@ -80,7 +101,7 @@ _target_extract()
 	esac
 	case "$URL" in
 		ftp://*|ftps://*|http://*|https://*)
-			$TAR -xzf "$PACKAGE-$VERSION$EXT"
+			$TAR -xzf "$PACKAGE-$VERSION$TARGZEXT"
 			;;
 	esac
 }
@@ -97,7 +118,7 @@ _target_make()
 _target_package()
 {
 	$RM -r "$DESTDIR"
-	_target_make DESTDIR="$DESTDIR" install &&
+	_target_make DESTDIR="$DESTDIR" 'install' &&
 	(cd "$DESTDIR" && $TAR -czf - "${PREFIX##/}") \
 		> "$PWD/$PACKAGE-$VERSION.pkg"
 }
@@ -114,6 +135,9 @@ _target_patch()
 _usage()
 {
 	echo "Usage: $PROGNAME [-c|-i|-u][-O name=value...][-P prefix] target..." 1>&2
+	echo "  -c	Perform the \"clean\" target" 1>&2
+	echo "  -i	Perform the \"install\" target" 1>&2
+	echo "  -u	Perform the \"uninstall\" target" 1>&2
 	echo "Available targets:" 1>&2
 	echo "  build" 1>&2
 	echo "  configure" 1>&2
@@ -127,10 +151,17 @@ _usage()
 }
 
 
+#warn
+_warn()
+{
+	echo "$PROGNAME: warning: $@" 1>&2
+}
+
+
 #main
 if [ ! -f ./config.sh ]; then
-	echo "$PROGNAME: Must be called from a project folder (config.sh not found)" 1>&2
-	exit 2
+	_error "Must be called from a project folder (config.sh not found)"
+	exit $?
 fi
 . ./config.sh
 
@@ -171,7 +202,7 @@ while [ $# -ne 0 ]; do
 	shift
 
 	if [ $clean -ne 0 ]; then
-		target="clean"
+		target='clean'
 	fi
 	case "$target" in
 		all|install|uninstall)
@@ -183,18 +214,15 @@ while [ $# -ne 0 ]; do
 			elif [ $install -ne 0 ]; then
 				_target_make 'install'
 			else
-				_target_make all
+				_target_make 'all'
 			fi
 			;;
 		clean|distclean)
 			[ ! -f "$PACKAGE-$VERSION/Makefile" ] \
 				|| _target_make "$target"
 			;;
-		configure|download|extract|patch)
+		configure|download|extract|package|patch)
 			"_target_$target"
-			;;
-		package)
-			_target_package
 			;;
 		*)
 			_usage

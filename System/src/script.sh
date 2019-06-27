@@ -63,6 +63,60 @@ _target_configure()
 }
 
 
+#target
+_target()
+{
+	target="$1"
+
+	if [ $clean -ne 0 -a "$target" != "clean" ]; then
+		_target_clean "$target"
+		return $?
+	fi
+	case "$target" in
+		all|install|uninstall)
+			_target_make "$target"
+			;;
+		build)
+			if [ $uninstall -ne 0 ]; then
+				_target_make 'uninstall'
+			elif [ $install -ne 0 ]; then
+				_target_make 'install'
+			else
+				_target_make 'all'
+			fi
+			;;
+		clean|distclean)
+			[ ! -f "$PACKAGE-$VERSION/Makefile" ] \
+				|| _target_make "$target"
+			;;
+		configure|download|extract|package|patch)
+			"_target_$target"
+			;;
+		*)
+			_usage
+			exit $?
+			;;
+	esac
+}
+
+
+#target_clean
+_target_clean()
+{
+	target="$1"
+
+	case "$target" in
+		all|build|install)
+			_target "clean"
+			return $?
+			;;
+		*)
+			return 0
+			;;
+	esac
+}
+
+
 #target_download
 _target_download()
 {
@@ -201,32 +255,5 @@ while [ $# -ne 0 ]; do
 	target="$1"
 	shift
 
-	if [ $clean -ne 0 ]; then
-		target='clean'
-	fi
-	case "$target" in
-		all|install|uninstall)
-			_target_make "$target"
-			;;
-		build)
-			if [ $uninstall -ne 0 ]; then
-				_target_make 'uninstall'
-			elif [ $install -ne 0 ]; then
-				_target_make 'install'
-			else
-				_target_make 'all'
-			fi
-			;;
-		clean|distclean)
-			[ ! -f "$PACKAGE-$VERSION/Makefile" ] \
-				|| _target_make "$target"
-			;;
-		configure|download|extract|package|patch)
-			"_target_$target"
-			;;
-		*)
-			_usage
-			exit $?
-			;;
-	esac
+	_target "$target"
 done
