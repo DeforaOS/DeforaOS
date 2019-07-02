@@ -213,14 +213,14 @@ target_bootstrap()
 	_bootstrap_wrap configure				|| return 2
 	_bootstrap_wrap makefiles				|| return 2
 	_bootstrap_wrap system		|| FAILED="$FAILED System"
-	_bootstrap_wrap devel		|| FAILED="$FAILED Devel"
-	_bootstrap_wrap database	|| FAILED="$FAILED Database"
-	_bootstrap_wrap graphics	|| FAILED="$FAILED Graphics"
-	_bootstrap_wrap desktop		|| FAILED="$FAILED Desktop"
-	_bootstrap_wrap network		|| FAILED="$FAILED Network"
-	_bootstrap_wrap unix		|| FAILED="$FAILED UNIX"
-	_bootstrap_wrap web		|| FAILED="$FAILED Web"
-	_bootstrap_wrap documentation	|| FAILED="$FAILED Documentation"
+	_bootstrap_wrap devel		|| FAILED="$FAILED Apps/Devel"
+	_bootstrap_wrap database	|| FAILED="$FAILED Apps/Database"
+	_bootstrap_wrap graphics	|| FAILED="$FAILED Apps/Graphics"
+	_bootstrap_wrap desktop		|| FAILED="$FAILED Apps/Desktop"
+	_bootstrap_wrap network		|| FAILED="$FAILED Apps/Network"
+	_bootstrap_wrap unix		|| FAILED="$FAILED Apps/UNIX"
+	_bootstrap_wrap web		|| FAILED="$FAILED Apps/Web"
+	_bootstrap_wrap documentation	|| FAILED="$FAILED Library/Documentation"
 	[ -z "$FAILED" ]					&& return 0
 	echo "Failed to build:$FAILED" 1>&2
 	return 2
