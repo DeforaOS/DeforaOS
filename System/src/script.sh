@@ -26,7 +26,7 @@
 
 #variables
 DESTDIR="$PWD/destdir"
-GIT_BRANCH=
+GIT_BRANCH='master'
 PREFIX="/usr/local"
 PROGNAME="script.sh"
 TARGZEXT=".tar.gz"
@@ -150,8 +150,7 @@ _target_extract()
 {
 	case "$VERSION" in
 		git)
-			[ -n "$GIT_BRANCH" ] &&
-				(cd "$PACKAGE-$VERSION" && $GIT checkout "$GIT_BRANCH")
+			(cd "$PACKAGE-$VERSION" && $GIT checkout "$GIT_BRANCH")
 			;;
 	esac
 	case "$URL" in
