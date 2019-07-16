@@ -575,7 +575,6 @@ else
 fi
 
 #initialize the target
-[ -z "$DESTDIR" ] && DESTDIR="$PWD/destdir-$HOST"
 [ -z "$OBJDIR" ] && OBJDIR="$PWD/objdir-$HOST"
 [ -z "$TOOLDIR" ] && TOOLDIR="$PWD/tooldir-$HOST"
 
