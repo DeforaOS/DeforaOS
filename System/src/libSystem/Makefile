@@ -37,7 +37,6 @@ clean:
 	../script.sh -c -P "$(PREFIX)" -- "patch"
 
 distclean: clean
-	$(RM) -- $(TARGETS)
 
 dist:
 	$(RM) -r -- $(OBJDIR)$(PACKAGE)-$(VERSION)
