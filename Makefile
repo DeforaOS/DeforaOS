@@ -28,7 +28,11 @@ all:
 	fi
 
 subdirs:
-	@for i in $(SUBDIRS); do (cd $$i && $(MAKE)) || exit; done
+	@for i in $(SUBDIRS); do (cd "$$i" && \
+		if [ -n "$(OBJDIR)" ]; then \
+		([ -d "$(OBJDIR)$$i" ] || $(MKDIR) -- "$(OBJDIR)$$i") && \
+		$(MAKE) OBJDIR="$(OBJDIR)$$i/"; \
+		else $(MAKE); fi) || exit; done
 
 bootstrap:
 	$(BUILDSH) -O MAKE="$(MAKE)" -O PREFIX="$(PREFIX)" bootstrap
@@ -49,7 +53,16 @@ patch:
 	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) patch) || break; done
 
 clean:
-	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean) || exit; done
+	@for i in $(SUBDIRS); do (cd "$$i" && \
+		if [ -n "$(OBJDIR)" ]; then \
+		$(MAKE) OBJDIR="$(OBJDIR)$$i/" clean; \
+		else $(MAKE) clean; fi) || exit; done
+
+distclean:
+	@for i in $(SUBDIRS); do (cd "$$i" && \
+		if [ -n "$(OBJDIR)" ]; then \
+		$(MAKE) OBJDIR="$(OBJDIR)$$i/" distclean; \
+		else $(MAKE) distclean; fi) || exit; done
 
 dist:
 	#XXX hack to bootstrap only configure
@@ -68,13 +81,16 @@ distcheck: dist
 	cd "$(PACKAGE)-$(VERSION)" && $(MAKE) dist
 	$(RM) -r -- $(PACKAGE)-$(VERSION)
 
-distclean:
-	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) distclean) || exit; done
-
-install:
-	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) install) || exit; done
+install: all
+	@for i in $(SUBDIRS); do (cd "$$i" && \
+		if [ -n "$(OBJDIR)" ]; then \
+		$(MAKE) OBJDIR="$(OBJDIR)$$i/" install; \
+		else $(MAKE) install; fi) || exit; done
 
 uninstall:
-	@for i in $(SUBDIRS); do (cd $$i && $(MAKE) uninstall) || exit; done
+	@for i in $(SUBDIRS); do (cd "$$i" && \
+		if [ -n "$(OBJDIR)" ]; then \
+		$(MAKE) OBJDIR="$(OBJDIR)$$i/" uninstall; \
+		else $(MAKE) uninstall; fi) || exit; done
 
 .PHONY: all subdirs clean distclean dist distcheck install uninstall bootstrap build configure download extract patch
