@@ -61,7 +61,11 @@ distcheck: dist
 	$(TAR) -xzvf $(OBJDIR)$(PACKAGE)-$(VERSION)$(TGZEXT)
 	$(MKDIR) -- $(PACKAGE)-$(VERSION)/objdir
 	$(MKDIR) -- $(PACKAGE)-$(VERSION)/destdir
-	#TODO actually perform checks
+	cd "$(PACKAGE)-$(VERSION)" && $(MAKE) OBJDIR="$$PWD/objdir/"
+	cd "$(PACKAGE)-$(VERSION)" && $(MAKE) OBJDIR="$$PWD/objdir/" DESTDIR="$$PWD/destdir" install
+	cd "$(PACKAGE)-$(VERSION)" && $(MAKE) OBJDIR="$$PWD/objdir/" DESTDIR="$$PWD/destdir" uninstall
+	cd "$(PACKAGE)-$(VERSION)" && $(MAKE) OBJDIR="$$PWD/objdir/" distclean
+	cd "$(PACKAGE)-$(VERSION)" && $(MAKE) dist
 	$(RM) -r -- $(PACKAGE)-$(VERSION)
 
 distclean:
