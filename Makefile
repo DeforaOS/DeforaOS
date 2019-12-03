@@ -21,11 +21,7 @@ MKDIR	= mkdir -m 0755 -p
 
 
 all:
-	@if [ ! -x "$(CONFIGURE)" ]; then \
-		$(MAKE) bootstrap; \
-	else \
-		$(MAKE) subdirs; \
-	fi
+	@if [ ! -x "$(CONFIGURE)" ]; then $(MAKE) bootstrap; else $(MAKE) subdirs; fi
 
 subdirs:
 	@for i in $(SUBDIRS); do (cd "$$i" && \
