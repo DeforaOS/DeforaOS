@@ -143,7 +143,7 @@ _target()
 		for subdir in $SUBDIRS; do
 			objdir="$OBJDIR"
 
-			if [ ! -z "$objdir" ]; then
+			if [ -n "$objdir" ]; then
 				$MKDIR -- "$objdir/$subdir"	|| return 2
 				objdir="$objdir/$subdir"
 			fi
@@ -161,16 +161,16 @@ _target_subdir()
 	make="$MAKE"
 
 	_info "Making target \"$target\" in \"$subdir\""
-	[ ! -z "$CONFIGURE" ] && make="CONFIGURE=\"$CONFIGURE\" $make DESTDIR=\"$DESTDIR\""
-	[ ! -z "$DESTDIR" ] && make="$make DESTDIR=\"$DESTDIR\""
-	[ ! -z "$PREFIX" ] && make="$make PREFIX=\"$PREFIX\""
-	[ ! -z "$CC" ] && make="$make CC=\"$CC\""
-	[ ! -z "$CPPFLAGS" ] && make="$make CPPFLAGS=\"$CPPFLAGS\""
-	[ ! -z "$CFLAGS" ] && make="$make CFLAGS=\"$CFLAGS\""
-	[ ! -z "$LD" ] && make="$make LD=\"$LD\""
-	[ ! -z "$LDFLAGS" ] && make="$make LDFLAGS=\"$LDFLAGS\""
-	[ ! -z "$LDFLAGSF" ] && make="$make LDFLAGSF=\"$LDFLAGSF\""
-	[ ! -z "$OBJDIR" ] && make="$make OBJDIR=\"$OBJDIR/\""
+	[ -n "$CONFIGURE" ] && make="CONFIGURE=\"$CONFIGURE\" $make DESTDIR=\"$DESTDIR\""
+	[ -n "$DESTDIR" ] && make="$make DESTDIR=\"$DESTDIR\""
+	[ -n "$PREFIX" ] && make="$make PREFIX=\"$PREFIX\""
+	[ -n "$CC" ] && make="$make CC=\"$CC\""
+	[ -n "$CPPFLAGS" ] && make="$make CPPFLAGS=\"$CPPFLAGS\""
+	[ -n "$CFLAGS" ] && make="$make CFLAGS=\"$CFLAGS\""
+	[ -n "$LD" ] && make="$make LD=\"$LD\""
+	[ -n "$LDFLAGS" ] && make="$make LDFLAGS=\"$LDFLAGS\""
+	[ -n "$LDFLAGSF" ] && make="$make LDFLAGSF=\"$LDFLAGSF\""
+	[ -n "$OBJDIR" ] && make="$make OBJDIR=\"$OBJDIR/\""
 	(cd "$subdir" && eval $make "$target")
 }
 
@@ -495,7 +495,7 @@ _usage()
 	echo "  image		Create a specific image" 1>&2
 	echo "  install	Build and install in the system" 1>&2
 	echo "  uninstall	Uninstall everything" 1>&2
-	if [ ! -z "$1" ]; then
+	if [ -n "$1" ]; then
 		echo 1>&2
 		echo "$1" 1>&2
 	fi
