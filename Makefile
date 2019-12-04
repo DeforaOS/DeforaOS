@@ -7,6 +7,7 @@
 #variables
 PACKAGE	= DeforaOS
 VERSION	= 0.0.0
+VENDOR	= DeforaOS
 SUBDIRS	= System/src Apps Library
 PREFIX	= /usr/local
 DEVNULL	= /dev/null
