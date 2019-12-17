@@ -1,5 +1,6 @@
 PACKAGE	= libSystem
 VERSION	= git
+VENDOR	= DeforaOS
 TARGETS	= build configure download extract patch
 OBJDIR	=
 PREFIX	= /usr/local
