@@ -552,6 +552,9 @@ if [ -z "$SYSTEM" ]; then
 	SYSTEM=$(uname -s)
 	case "$SYSTEM" in
 		Darwin)
+			BOOTSTRAP_CFLAGS=" "
+			BOOTSTRAP_LDFLAGS=" "
+			CFLAGS=" "
 			LDFLAGS=" "
 			;;
 		MINGW32_NT-?.?)
