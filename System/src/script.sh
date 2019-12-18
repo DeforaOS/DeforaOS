@@ -133,7 +133,7 @@ _target_download()
 			fi
 			;;
 		ftps://*|https://*)
-			[ ! -f "$PACKAGE-$VERSION$TARGZEXT" ] && $FETCH "$URL"
+			[ -f "$PACKAGE-$VERSION$TARGZEXT" ] || $FETCH "$URL"
 			;;
 		ftp://*|http://*)
 			if [ ! -f "$PACKAGE-$VERSION$TARGZEXT" ]; then
