@@ -152,10 +152,8 @@ _target_extract()
 		git)
 			(cd "$PACKAGE-$VERSION" && $GIT checkout "$GIT_BRANCH")
 			;;
-	esac
-	case "$URL" in
-		ftp://*|ftps://*|http://*|https://*)
-			$TAR -xzf "$PACKAGE-$VERSION$TARGZEXT"
+		*)
+			[ -d "$PACKAGE-$VERSION" ] || $TAR -xzf "$PACKAGE-$VERSION$TARGZEXT"
 			;;
 	esac
 }
