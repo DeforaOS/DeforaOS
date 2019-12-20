@@ -36,8 +36,10 @@ URL=
 FETCH='wget'
 GIT='git'
 [ -n "$MAKE" ] || MAKE='make'
+PATCH="patch"
 RM='rm -f'
 TAR='tar'
+TOUCH='touch'
 
 
 #functions
@@ -179,7 +181,13 @@ _target_package()
 #target_patch
 _target_patch()
 {
-	:
+	filename="patch-${PACKAGE}_$VERSION.diff"
+
+	[ ! -f "$PACKAGE-$VERSION/.patch-done" ]		|| return 0
+	if [ -f "$filename" ]; then
+		(cd "$PACKAGE-$VERSION" && $PATCH -p1 < "../$filename") &&
+			$TOUCH "$PACKAGE-$VERSION/.patch-done"
+	fi
 }
 
 
