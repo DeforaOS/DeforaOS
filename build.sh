@@ -86,7 +86,8 @@ SUBDIRS="System/src/libc
 	Apps/Unix/src/others
 	Apps/Servers/src/inetd
 	Apps/Network/src/VPN
-	Apps/Devel/src/configure"
+	Apps/Devel/src/configure
+	Apps/Graphics/src/TinyGL"
 
 
 #functions
