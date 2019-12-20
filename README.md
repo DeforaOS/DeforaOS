@@ -37,9 +37,9 @@ Getting started
 
 The current requirements to build and install DeforaOS are:
 
-* POSIX-compliant Operating System (NetBSD, Linux, mac OS, other BSDs...)
-* a working C compiler and assembler (GCC, LLVM...)
-* Git, to download and synchronize the components as required
+ * POSIX-compliant Operating System (NetBSD, Linux, macOS, BSD...)
+ * a working C compiler and assembler (GCC, LLVM...)
+ * Git, to download and synchronize the components as required
 
 Run the following command to configure the sources for the project and compile
 the essential tools to build it:
@@ -51,7 +51,6 @@ its different components:
 
     $ make
 
-
 Alternatively, a helper script is available, in order to build bootable images
 of the Operating System:
 
@@ -62,12 +61,12 @@ Contact information
 
 The project can be found and contacted at:
 
-* Web:     https://www.defora.org/ or on [GitHub](https://github.com/DeforaOS)
-* e-mail:  info@defora.org or via mailing-lists at https://lists.defora.org/
-* IRC:     #DeforaOS on the [OFTC network](https://www.oftc.net/)
-* Twitter: [@DeforaOS](https://twitter.com/DeforaOS)
+ * Web:     https://www.defora.org/ or on [GitHub](https://github.com/DeforaOS)
+ * e-mail:  info@defora.org or via mailing-lists at https://lists.defora.org/
+ * IRC:     #DeforaOS on the [OFTC network](https://www.oftc.net/)
+ * Twitter: [@DeforaOS](https://twitter.com/DeforaOS)
 
 Donations are accepted at the following address:
 
-* Bitcoin: `1yKwy1JqXYkXX8WQtWQK4iHodXWiqWivD`
+ * Bitcoin: `1yKwy1JqXYkXX8WQtWQK4iHodXWiqWivD`
 
