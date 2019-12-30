@@ -261,5 +261,5 @@ while [ $# -ne 0 ]; do
 	target="$1"
 	shift
 
-	_target "$target"
+	_target "$target"					|| exit $?
 done
