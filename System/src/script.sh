@@ -152,11 +152,12 @@ _target_extract()
 {
 	case "$VERSION" in
 		git)
-			(cd "$PACKAGE-$VERSION" && $GIT checkout "$GIT_BRANCH")
-			[ $? -eq 0 -a -f "$PACKAGE-$VERSION/.gitmodules" ] &&
-				(cd "$PACKAGE-$VERSION" &&
-				$GIT submodule init &&
-				$GIT submodule update)
+			(cd "$PACKAGE-$VERSION" &&
+				$GIT checkout "$GIT_BRANCH" &&
+				if [ -f ".gitmodules" ]; then
+					$GIT submodule init &&
+						$GIT submodule update
+				fi)
 			;;
 		*)
 			[ -d "$PACKAGE-$VERSION" ] || $TAR -xzf "$PACKAGE-$VERSION$TARGZEXT"
