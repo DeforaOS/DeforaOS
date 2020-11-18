@@ -1,7 +1,7 @@
 PACKAGE	= configure
 VERSION	= git
 VENDOR	= DeforaOS
-TARGETS	= build configure download extract patch
+TARGETS	= build configure download extract patch tests
 OBJDIR	=
 PREFIX	= /usr/local
 DESTDIR	=
@@ -30,12 +30,16 @@ extract: download
 patch: extract
 	../../../../System/src/script.sh -P "$(PREFIX)" -- "patch"
 
+tests: patch
+	../../../../System/src/script.sh -P "$(PREFIX)" -- "tests"
+
 clean:
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "build"
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "configure"
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -O URL=https://git.defora.org/DeforaOS/$(PACKAGE).git -- "download"
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "extract"
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "patch"
+	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "tests"
 
 distclean: clean
 
@@ -65,4 +69,4 @@ install: all
 uninstall:
 	../../../../System/src/script.sh -P "$(DESTDIR)$(PREFIX)" -u -- "build"
 
-.PHONY: all clean distclean dist distcheck install uninstall build configure download extract patch
+.PHONY: all clean distclean dist distcheck install uninstall build configure download extract patch tests

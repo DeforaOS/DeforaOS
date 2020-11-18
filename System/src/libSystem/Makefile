@@ -1,7 +1,7 @@
 PACKAGE	= libSystem
 VERSION	= git
 VENDOR	= DeforaOS
-TARGETS	= build configure download extract patch
+TARGETS	= build configure download extract patch tests
 OBJDIR	=
 PREFIX	= /usr/local
 DESTDIR	=
@@ -30,12 +30,16 @@ extract: download
 patch: extract
 	../script.sh -P "$(PREFIX)" -- "patch"
 
+tests: patch
+	../script.sh -P "$(PREFIX)" -- "tests"
+
 clean:
 	../script.sh -c -P "$(PREFIX)" -- "build"
 	../script.sh -c -P "$(PREFIX)" -- "configure"
 	../script.sh -c -P "$(PREFIX)" -O URL=https://git.defora.org/DeforaOS/$(PACKAGE).git -- "download"
 	../script.sh -c -P "$(PREFIX)" -- "extract"
 	../script.sh -c -P "$(PREFIX)" -- "patch"
+	../script.sh -c -P "$(PREFIX)" -- "tests"
 
 distclean: clean
 
@@ -65,4 +69,4 @@ install: all
 uninstall:
 	../script.sh -P "$(DESTDIR)$(PREFIX)" -u -- "build"
 
-.PHONY: all clean distclean dist distcheck install uninstall build configure download extract patch
+.PHONY: all clean distclean dist distcheck install uninstall build configure download extract patch tests
