@@ -75,7 +75,7 @@ _target()
 		return $?
 	fi
 	case "$target" in
-		all|install|uninstall)
+		all|install|tests|uninstall)
 			_target_make "$target"
 			;;
 		build)
@@ -196,6 +196,13 @@ _target_patch()
 }
 
 
+#target_tests
+_target_tests()
+{
+	(cd "$PACKAGE-$VERSION" && $MAKE "$@")
+}
+
+
 #usage
 _usage()
 {
@@ -211,6 +218,7 @@ _usage()
 	echo "  install" 1>&2
 	echo "  package" 1>&2
 	echo "  patch" 1>&2
+	echo "  tests" 1>&2
 	echo "  uninstall" 1>&2
 	return 1
 }
