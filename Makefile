@@ -35,22 +35,22 @@ bootstrap:
 	$(BUILDSH) -O MAKE="$(MAKE)" -O PREFIX="$(PREFIX)" bootstrap
 
 build:
-	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) build) || break; done
+	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) build) || break; done
 
 configure:
-	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) configure) || break; done
+	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) configure) || break; done
 
 download:
-	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) download) || break; done
+	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) download) || break; done
 
 extract:
-	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) extract) || break; done
+	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) extract) || break; done
 
 patch:
-	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) patch) || break; done
+	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) patch) || break; done
 
 tests:
-	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) tests) || break; done
+	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) tests) || break; done
 
 clean:
 	@for i in $(SUBDIRS); do (cd "$$i" && \
