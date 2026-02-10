@@ -177,7 +177,7 @@ _target_download()
 	case "$URL" in
 		git://*|http://*.git)
 			if [ ! -d "$PACKAGE-$VERSION/.git" ]; then
-				_warn "$URL: Repository access is not encrypted"
+				_warning "$URL: Repository access is not encrypted"
 				$DEBUG $GIT clone -n "$URL" "$PACKAGE-$VERSION"
 			fi
 			;;
@@ -191,7 +191,7 @@ _target_download()
 			;;
 		ftp://*|http://*)
 			if [ ! -f "$PACKAGE-$VERSION$TARGZEXT" ]; then
-				_warn "$URL: Repository access is not encrypted"
+				_warning "$URL: Repository access is not encrypted"
 				$DEBUG $FETCH "$URL"
 			fi
 			;;
@@ -345,8 +345,8 @@ _usage()
 }
 
 
-#warn
-_warn()
+#warning
+_warning()
 {
 	echo "$PROGNAME: warning: $@" 1>&2
 }
