@@ -1,6 +1,7 @@
 #!/bin/sh -e
 #$Id$
 #Copyright (c) 2012-2026 Pierre Pronchery <khorben@defora.org>
+#This file is part of the DeforaOS Project.
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
