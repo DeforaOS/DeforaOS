@@ -1,6 +1,6 @@
 #!/bin/sh
 #$Id$
-#Copyright (c) 2012-2020 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2012-2026 Pierre Pronchery <khorben@defora.org>
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are met:
@@ -25,24 +25,68 @@
 
 
 #variables
+CONFIGSH="config.sh"
 DESTDIR="$PWD/destdir"
 GIT_BRANCH='master'
 PREFIX="/usr/local"
+LIBDIR="$PREFIX/lib"
+PROJECTCONF="project.conf"
 PROGNAME="script.sh"
 TARGZEXT=".tar.gz"
 URL=
 #executables
+BOMTOOL="bomtool"
 [ -z "$CONFIGURE" ] && CONFIGURE='configure -v'
+DEBUG=
 FETCH='wget'
 GIT='git'
+INSTALL="install"
 [ -n "$MAKE" ] || MAKE='make'
+MKDIR="mkdir -p"
 PATCH="patch"
 RM='rm -f'
 TAR='tar'
 TOUCH='touch'
+TR="tr"
 
 
 #functions
+#config_get
+_config_get()
+{
+	filename="$1"
+	section="$2"
+	variable="$3"
+	cursection=
+	value=
+
+	while read line; do
+		case "$line" in
+			"["*"]")
+				cursection="${line#[}"
+				cursection="${cursection%]}"
+				;;
+			*"="*)
+				curvariable="${line%%=*}"
+				curvalue="${line#*=}"
+				[ "$cursection" = "$section" \
+					-a "$curvariable" = "$variable" ] &&
+					value="$curvalue"
+				;;
+		esac
+	done < "$filename"
+	echo "$value"
+}
+
+
+#debug
+_debug()
+{
+	echo "$@" 1>&2
+	"$@"
+}
+
+
 #error
 _error()
 {
@@ -55,12 +99,12 @@ _error()
 _target_configure()
 {
 	if [ -f "$PACKAGE-$VERSION/autogen.sh" ]; then
-		(cd "$PACKAGE-$VERSION" && ./autogen.sh)
+		(cd "$PACKAGE-$VERSION" && $DEBUG ./autogen.sh)
 	fi
 	if [ -f "$PACKAGE-$VERSION/configure" ]; then
-		(cd "$PACKAGE-$VERSION" && ./configure)
-	elif [ -f "$PACKAGE-$VERSION/project.conf" ]; then
-		(cd "$PACKAGE-$VERSION" && $CONFIGURE -p "$PREFIX")
+		(cd "$PACKAGE-$VERSION" && $DEBUG ./configure)
+	elif [ -f "$PACKAGE-$VERSION/$PROJECTCONF" ]; then
+		(cd "$PACKAGE-$VERSION" && $DEBUG $CONFIGURE -p "$PREFIX")
 	fi
 }
 
@@ -91,7 +135,7 @@ _target()
 			[ ! -f "$PACKAGE-$VERSION/Makefile" ] \
 				|| _target_make "$target"
 			;;
-		configure|download|extract|package|patch)
+		configure|download|extract|package|patch|sbom)
 			"_target_$target"
 			;;
 		*)
@@ -112,6 +156,9 @@ _target_clean()
 			_target "clean"
 			return $?
 			;;
+		sbom)
+			_target_sbom
+			;;
 		*)
 			return 0
 			;;
@@ -126,21 +173,21 @@ _target_download()
 		git://*|http://*.git)
 			if [ ! -d "$PACKAGE-$VERSION/.git" ]; then
 				_warn "$URL: Repository access is not encrypted"
-				$GIT clone -n "$URL" "$PACKAGE-$VERSION"
+				$DEBUG $GIT clone -n "$URL" "$PACKAGE-$VERSION"
 			fi
 			;;
 		https://*.git|*.git)
 			if [ ! -d "$PACKAGE-$VERSION/.git" ]; then
-				$GIT clone -n "$URL" "$PACKAGE-$VERSION"
+				$DEBUG $GIT clone -n "$URL" "$PACKAGE-$VERSION"
 			fi
 			;;
 		ftps://*|https://*)
-			[ -f "$PACKAGE-$VERSION$TARGZEXT" ] || $FETCH "$URL"
+			[ -f "$PACKAGE-$VERSION$TARGZEXT" ] || $DEBUG $FETCH "$URL"
 			;;
 		ftp://*|http://*)
 			if [ ! -f "$PACKAGE-$VERSION$TARGZEXT" ]; then
 				_warn "$URL: Repository access is not encrypted"
-				$FETCH "$URL"
+				$DEBUG $FETCH "$URL"
 			fi
 			;;
 	esac
@@ -151,16 +198,16 @@ _target_download()
 _target_extract()
 {
 	case "$VERSION" in
-		git)
+		"git")
 			(cd "$PACKAGE-$VERSION" &&
-				$GIT checkout "$GIT_BRANCH" &&
+				$DEBUG $GIT checkout "$GIT_BRANCH" &&
 				if [ -f ".gitmodules" ]; then
-					$GIT submodule init &&
-						$GIT submodule update
+					$DEBUG $GIT submodule init &&
+						$DEBUG $GIT submodule update
 				fi)
 			;;
 		*)
-			[ -d "$PACKAGE-$VERSION" ] || $TAR -xzf "$PACKAGE-$VERSION$TARGZEXT"
+			[ -d "$PACKAGE-$VERSION" ] || $DEBUG $TAR -xzf "$PACKAGE-$VERSION$TARGZEXT"
 			;;
 	esac
 }
@@ -169,7 +216,7 @@ _target_extract()
 #target_make
 _target_make()
 {
-	(cd "$PACKAGE-$VERSION" && $MAKE "$@")
+	(cd "$PACKAGE-$VERSION" && $DEBUG $MAKE "$@")
 }
 
 
@@ -178,7 +225,7 @@ _target_package()
 {
 	$RM -r "$DESTDIR"
 	_target_make DESTDIR="$DESTDIR" 'install' &&
-	(cd "$DESTDIR" && $TAR -czf - "${PREFIX##/}") \
+	(cd "$DESTDIR" && $DEBUG $TAR -czf - "${PREFIX##/}") \
 		> "$PWD/$PACKAGE-$VERSION.pkg"
 }
 
@@ -190,23 +237,91 @@ _target_patch()
 
 	[ ! -f "$PACKAGE-$VERSION/.patch-done" ]		|| return 0
 	if [ -f "$filename" ]; then
-		(cd "$PACKAGE-$VERSION" && $PATCH -p1 < "../$filename") &&
-			$TOUCH "$PACKAGE-$VERSION/.patch-done"
+		(cd "$PACKAGE-$VERSION" && $DEBUG $PATCH -p1 < "../$filename") &&
+			$DEBUG $TOUCH "$PACKAGE-$VERSION/.patch-done"
 	fi
+}
+
+
+#target_sbom
+_target_sbom()
+{
+	sbomdir="$LIBDIR/sbom"
+	spdxdir="$sbomdir/SPDX-2.2"
+	name="$PACKAGE"
+	[ -n "$VENDOR" ] && name="$VENDOR-$name"
+	name=$(echo "$name" | $TR A-Z a-z)
+	version="$VERSION"
+
+	#clean
+	if [ $clean -ne 0 ]; then
+		$DEBUG $RM -- "$OBJDIR$name.pc" "$OBJDIR$name.spdx"
+		return $?
+	fi
+
+	#uninstall
+	if [ $uninstall -ne 0 ]; then
+		$DEBUG $RM -- "$DESTDIR$sbomdir/$name.pc"
+		$DEBUG $RM -- "$DESTDIR$spdxdir/$name.spdx"
+		return $?
+	fi
+
+	#version
+	if [ "$version" = "git" -a -f "$PACKAGE-$VERSION/$PROJECTCONF" ]; then
+		v=$(_config_get "$PACKAGE-$VERSION/$PROJECTCONF" "" "version")
+		[ -n "$v" ] && version="$v+git"
+	fi
+
+	#license
+	license=$(_config_get "$PROJECTCONF" "metadata" "license")
+	[ -n "$license" ] || license="NOASSERTION"
+
+	#generate the pkgconfig file
+	[ -n "$OBJDIR" ] && $DEBUG $MKDIR -- "$OBJDIR"
+	(_sbom_field "Name" "$name"
+	_sbom_field "Description" "$(_config_get "$PROJECTCONF" "metadata" "description")"
+	_sbom_field "Version" "$version"
+	_sbom_field "Copyright" "$(_config_get "$PROJECTCONF" "metadata" "copyright")"
+	_sbom_field "URL" "$(_config_get "$PROJECTCONF" "metadata" "homepage")"
+	_sbom_field "Source" "$(_config_get "$PROJECTCONF" "metadata" "download")"
+	_sbom_field "License" "$license"
+	_sbom_field "Maintainer" "$(_config_get "$PROJECTCONF" "metadata" "maintainer")"
+	_sbom_field "Requires" "$(_config_get "$PROJECTCONF" "metadata" "depends")") > "$OBJDIR$name.pc"
+	res=$?
+	[ $res -eq 0 ] || return $res
+
+	#generate the SPDX file
+	PKG_CONFIG_PATH="$PWD:$DESTDIR$sbomdir" $DEBUG $BOMTOOL "$name" > "$OBJDIR$name.spdx"
+	res=$?
+	[ $res -eq 0 ] || return $res
+
+	[ $install -eq 0 ] && return 0
+
+	$DEBUG $MKDIR -- "$DESTDIR$spdxdir" &&
+		$DEBUG $INSTALL -m 0644 "$OBJDIR$name.pc" "$DESTDIR$sbomdir/$name.pc" &&
+		$DEBUG $INSTALL -m 0644 "$OBJDIR$name.spdx" "$DESTDIR$spdxdir/$name.spdx"
+}
+
+_sbom_field()
+{
+	key="$1"
+	value="$2"
+
+	[ -z "$value" ] || echo "$key: $value"
 }
 
 
 #target_tests
 _target_tests()
 {
-	(cd "$PACKAGE-$VERSION" && $MAKE "$@")
+	(cd "$PACKAGE-$VERSION" && $DEBUG $MAKE "$@")
 }
 
 
 #usage
 _usage()
 {
-	echo "Usage: $PROGNAME [-c|-i|-u][-O name=value...][-P prefix] target..." 1>&2
+	echo "Usage: $PROGNAME [-c|-i|-u][-O name=value...][-P prefix][-qv] target..." 1>&2
 	echo "  -c	Perform the \"clean\" target" 1>&2
 	echo "  -i	Perform the \"install\" target" 1>&2
 	echo "  -u	Perform the \"uninstall\" target" 1>&2
@@ -218,6 +333,7 @@ _usage()
 	echo "  install" 1>&2
 	echo "  package" 1>&2
 	echo "  patch" 1>&2
+	echo "  sbom" 1>&2
 	echo "  tests" 1>&2
 	echo "  uninstall" 1>&2
 	return 1
@@ -232,16 +348,16 @@ _warn()
 
 
 #main
-if [ ! -f ./config.sh ]; then
-	_error "Must be called from a project folder (config.sh not found)"
+if [ ! -f "$CONFIGSH" ]; then
+	_error "Must be called from a project folder ($CONFIGSH not found)"
 	exit $?
 fi
-. ./config.sh
+. "$CONFIGSH"
 
 clean=0
 install=0
 uninstall=0
-while getopts "ciO:P:u" name; do
+while getopts "ciO:P:quv" name; do
 	case "$name" in
 		c)
 			clean=1
@@ -254,9 +370,16 @@ while getopts "ciO:P:u" name; do
 			;;
 		P)
 			PREFIX="$OPTARG"
+			LIBDIR="$PREFIX/lib"
+			;;
+		q)
+			DEBUG=
 			;;
 		u)
 			uninstall=1
+			;;
+		v)
+			DEBUG="_debug"
 			;;
 		*)
 			_usage

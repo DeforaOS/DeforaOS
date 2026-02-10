@@ -1,5 +1,5 @@
 #$Id$
-#Copyright (c) 2004-2025 Pierre Pronchery <khorben@defora.org>
+#Copyright (c) 2004-2026 Pierre Pronchery <khorben@defora.org>
 #This file is part of the DeforaOS Project
 
 
@@ -35,7 +35,7 @@ bootstrap:
 	$(BUILDSH) -O MAKE="$(MAKE)" -O PREFIX="$(PREFIX)" bootstrap
 
 build:
-	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) build) || break; done
+	@for subdir in $(SUBDIRS); do if [ -n "$(OBJDIR)" ]; then (cd $$subdir && $(MAKE) OBJDIR="$(OBJDIR)$$subdir/" build); else (cd $$subdir && $(MAKE) build); fi || break; done
 
 configure:
 	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) configure) || break; done
@@ -48,6 +48,9 @@ extract:
 
 patch:
 	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) patch) || break; done
+
+sbom:
+	@for subdir in $(SUBDIRS); do if [ -n "$(OBJDIR)" ]; then (cd $$subdir && $(MAKE) OBJDIR="$(OBJDIR)$$subdir/" sbom); else (cd $$subdir && $(MAKE) sbom); fi || break; done
 
 tests:
 	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) tests) || break; done
@@ -93,4 +96,4 @@ uninstall:
 		$(MAKE) OBJDIR="$(OBJDIR)$$i/" uninstall; \
 		else $(MAKE) uninstall; fi) || exit; done
 
-.PHONY: all subdirs clean distclean dist distcheck install uninstall bootstrap build configure download extract patch tests
+.PHONY: all subdirs clean distclean dist distcheck install uninstall bootstrap build configure download extract patch sbom tests
