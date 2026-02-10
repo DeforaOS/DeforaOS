@@ -25,9 +25,11 @@
 
 
 #variables
+CONFIGSH="config.sh"
 DESTDIR="$PWD/destdir"
 GIT_BRANCH='master'
 PREFIX="/usr/local"
+PROJECTCONF="project.conf"
 PROGNAME="script.sh"
 TARGZEXT=".tar.gz"
 URL=
@@ -160,7 +162,7 @@ _target_download()
 _target_extract()
 {
 	case "$VERSION" in
-		git)
+		"git")
 			(cd "$PACKAGE-$VERSION" &&
 				$DEBUG $GIT checkout "$GIT_BRANCH" &&
 				if [ -f ".gitmodules" ]; then
@@ -241,11 +243,11 @@ _warn()
 
 
 #main
-if [ ! -f ./config.sh ]; then
-	_error "Must be called from a project folder (config.sh not found)"
+if [ ! -f "$CONFIGSH" ]; then
+	_error "Must be called from a project folder ($CONFIGSH not found)"
 	exit $?
 fi
-. ./config.sh
+. "$CONFIGSH"
 
 clean=0
 install=0
