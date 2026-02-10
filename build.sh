@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 #$Id$
 #Copyright (c) 2008-2026 Pierre Pronchery <khorben@defora.org>
 #This file is part of DeforaOS
@@ -611,7 +611,7 @@ done
 
 #import the target
 if [ ! -f "Apps/Devel/src/scripts/scripts-git/targets/$TARGET" ]; then
-	_warning "$TARGET: Unsupported target" 1>&2
+	_warning "$TARGET: Unsupported target" 1>&2 || true
 else
 	. "Apps/Devel/src/scripts/scripts-git/targets/$TARGET"
 fi
