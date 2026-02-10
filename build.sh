@@ -474,6 +474,13 @@ _install_do()
 }
 
 
+#target_sbom
+target_sbom()
+{
+	_target "sbom"
+}
+
+
 #target_uninstall
 target_uninstall()
 {
@@ -494,6 +501,7 @@ _usage()
 	echo "  distclean	Remove all compiled files" 1>&2
 	echo "  image		Create a specific image" 1>&2
 	echo "  install	Build and install in the system" 1>&2
+	echo "  sbom	Generate SBOM files" 1>&2
 	echo "  uninstall	Uninstall everything" 1>&2
 	if [ -n "$1" ]; then
 		echo 1>&2
@@ -627,7 +635,7 @@ while [ $# -gt 0 ]; do
 	shift
 
 	case "$target" in
-		all|bootstrap|clean|distclean|image|install|uninstall)
+		all|bootstrap|clean|distclean|image|install|sbom|uninstall)
 			_info "Making target \"$target\" on $TARGET"
 			("target_$target")
 			if [ $? -ne 0 ]; then
