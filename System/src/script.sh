@@ -29,6 +29,7 @@ CONFIGSH="config.sh"
 DESTDIR="$PWD/destdir"
 GIT_BRANCH='master'
 PREFIX="/usr/local"
+LIBDIR="$PREFIX/lib"
 PROJECTCONF="project.conf"
 PROGNAME="script.sh"
 TARGZEXT=".tar.gz"
@@ -39,7 +40,9 @@ BOMTOOL="bomtool"
 DEBUG=
 FETCH='wget'
 GIT='git'
+INSTALL="install"
 [ -n "$MAKE" ] || MAKE='make'
+MKDIR="mkdir -p"
 PATCH="patch"
 RM='rm -f'
 TAR='tar'
@@ -153,6 +156,9 @@ _target_clean()
 			_target "clean"
 			return $?
 			;;
+		sbom)
+			_target_sbom
+			;;
 		*)
 			return 0
 			;;
@@ -240,10 +246,25 @@ _target_patch()
 #target_sbom
 _target_sbom()
 {
+	sbomdir="$LIBDIR/sbom"
+	spdxdir="$sbomdir/SPDX-2.2"
 	name="$PACKAGE"
 	[ -n "$VENDOR" ] && name="$VENDOR-$name"
 	name=$(echo "$name" | $TR A-Z a-z)
 	version="$VERSION"
+
+	#clean
+	if [ $clean -ne 0 ]; then
+		$DEBUG $RM -- "$OBJDIR$name.pc" "$OBJDIR$name.spdx"
+		return $?
+	fi
+
+	#uninstall
+	if [ $uninstall -ne 0 ]; then
+		$DEBUG $RM -- "$DESTDIR$sbomdir/$name.pc"
+		$DEBUG $RM -- "$DESTDIR$spdxdir/$name.spdx"
+		return $?
+	fi
 
 	#version
 	if [ "$version" = "git" -a -f "$PACKAGE-$VERSION/$PROJECTCONF" ]; then
@@ -255,6 +276,7 @@ _target_sbom()
 	license=$(_config_get "$PROJECTCONF" "metadata" "license")
 	[ -n "$license" ] || license="NOASSERTION"
 
+	#generate the pkgconfig file
 	(_sbom_field "Name" "$name"
 	_sbom_field "Description" "$(_config_get "$PROJECTCONF" "metadata" "description")"
 	_sbom_field "Version" "$version"
@@ -263,13 +285,20 @@ _target_sbom()
 	_sbom_field "Source" "$(_config_get "$PROJECTCONF" "metadata" "download")"
 	_sbom_field "License" "$license"
 	_sbom_field "Maintainer" "$(_config_get "$PROJECTCONF" "metadata" "maintainer")"
-	_sbom_field "Requires" "$(_config_get "$PROJECTCONF" "metadata" "depends")") > "$name.pc"
-	ret=$?
-	if [ $ret -eq 0 ]; then
-		PKG_CONFIG_PATH="$PWD" $DEBUG $BOMTOOL "$name" > "$name.spdx"
-		ret=$?
-	fi
-	return $ret
+	_sbom_field "Requires" "$(_config_get "$PROJECTCONF" "metadata" "depends")") > "$OBJDIR$name.pc"
+	res=$?
+	[ $res -eq 0 ] || return $res
+
+	#generate the SPDX file
+	PKG_CONFIG_PATH="$PWD:$DESTDIR$sbomdir" $DEBUG $BOMTOOL "$name" > "$OBJDIR$name.spdx"
+	res=$?
+	[ $res -eq 0 ] || return $res
+
+	[ $install -eq 0 ] && return 0
+
+	$DEBUG $MKDIR -- "$DESTDIR$spdxdir" &&
+		$DEBUG $INSTALL -m 0644 "$OBJDIR$name.pc" "$DESTDIR$sbomdir/$name.pc" &&
+		$DEBUG $INSTALL -m 0644 "$OBJDIR$name.spdx" "$DESTDIR$spdxdir/$name.spdx"
 }
 
 _sbom_field()
@@ -340,6 +369,7 @@ while getopts "ciO:P:quv" name; do
 			;;
 		P)
 			PREFIX="$OPTARG"
+			LIBDIR="$PREFIX/lib"
 			;;
 		q)
 			DEBUG=
