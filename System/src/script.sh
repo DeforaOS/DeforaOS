@@ -277,6 +277,7 @@ _target_sbom()
 	[ -n "$license" ] || license="NOASSERTION"
 
 	#generate the pkgconfig file
+	[ -n "$OBJDIR" ] && $DEBUG $MKDIR -- "$OBJDIR"
 	(_sbom_field "Name" "$name"
 	_sbom_field "Description" "$(_config_get "$PROJECTCONF" "metadata" "description")"
 	_sbom_field "Version" "$version"
