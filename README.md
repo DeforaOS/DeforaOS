@@ -3,7 +3,6 @@ DeforaOS Project
 
 About DeforaOS
 --------------
-
 DeforaOS is an Operating System developed with new and innovative concepts in
 its design and architecture. Its goal is to let users work securely yet
 seamlessly across any number of devices. This means that the relevant data is
@@ -15,7 +14,6 @@ computing platforms from third parties (also known as "cloud").
 
 Project structure
 -----------------
-
 The project is essentially divided into three main components:
 
 1. Distributed framework
@@ -34,7 +32,6 @@ The project is essentially divided into three main components:
 
 Getting started
 ---------------
-
 The current requirements to build and install DeforaOS are:
 
  * POSIX-compliant Operating System (NetBSD, Linux, macOS, BSD...)
@@ -58,7 +55,6 @@ of the Operating System:
 
 Contact information
 -------------------
-
 The project can be found and contacted at:
 
  * Web:     https://www.defora.org/ or on [GitHub](https://github.com/DeforaOS)
