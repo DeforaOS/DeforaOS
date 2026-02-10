@@ -60,7 +60,6 @@ The project can be found and contacted at:
  * Web:     https://www.defora.org/ or on [GitHub](https://github.com/DeforaOS)
  * e-mail:  info@defora.org or via mailing-lists at https://lists.defora.org/
  * IRC:     #DeforaOS on the [OFTC network](https://www.oftc.net/)
- * Twitter: [@DeforaOS](https://twitter.com/DeforaOS)
 
 Donations are accepted at the following locations:
 
