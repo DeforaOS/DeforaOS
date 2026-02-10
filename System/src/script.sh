@@ -34,6 +34,7 @@ PROGNAME="script.sh"
 TARGZEXT=".tar.gz"
 URL=
 #executables
+BOMTOOL="bomtool"
 [ -z "$CONFIGURE" ] && CONFIGURE='configure -v'
 DEBUG=
 FETCH='wget'
@@ -43,9 +44,38 @@ PATCH="patch"
 RM='rm -f'
 TAR='tar'
 TOUCH='touch'
+TR="tr"
 
 
 #functions
+#config_get
+_config_get()
+{
+	filename="$1"
+	section="$2"
+	variable="$3"
+	cursection=
+	value=
+
+	while read line; do
+		case "$line" in
+			"["*"]")
+				cursection="${line#[}"
+				cursection="${cursection%]}"
+				;;
+			*"="*)
+				curvariable="${line%%=*}"
+				curvalue="${line#*=}"
+				[ "$cursection" = "$section" \
+					-a "$curvariable" = "$variable" ] &&
+					value="$curvalue"
+				;;
+		esac
+	done < "$filename"
+	echo "$value"
+}
+
+
 #debug
 _debug()
 {
@@ -102,7 +132,7 @@ _target()
 			[ ! -f "$PACKAGE-$VERSION/Makefile" ] \
 				|| _target_make "$target"
 			;;
-		configure|download|extract|package|patch)
+		configure|download|extract|package|patch|sbom)
 			"_target_$target"
 			;;
 		*)
@@ -207,6 +237,50 @@ _target_patch()
 }
 
 
+#target_sbom
+_target_sbom()
+{
+	name="$PACKAGE"
+	[ -n "$VENDOR" ] && name="$VENDOR-$name"
+	name=$(echo "$name" | $TR A-Z a-z)
+	version="$VERSION"
+
+	#version
+	if [ "$version" = "git" -a -f "$PACKAGE-$VERSION/$PROJECTCONF" ]; then
+		v=$(_config_get "$PACKAGE-$VERSION/$PROJECTCONF" "" "version")
+		[ -n "$v" ] && version="$v+git"
+	fi
+
+	#license
+	license=$(_config_get "$PROJECTCONF" "metadata" "license")
+	[ -n "$license" ] || license="NOASSERTION"
+
+	(_sbom_field "Name" "$name"
+	_sbom_field "Description" "$(_config_get "$PROJECTCONF" "metadata" "description")"
+	_sbom_field "Version" "$version"
+	_sbom_field "Copyright" "$(_config_get "$PROJECTCONF" "metadata" "copyright")"
+	_sbom_field "URL" "$(_config_get "$PROJECTCONF" "metadata" "homepage")"
+	_sbom_field "Source" "$(_config_get "$PROJECTCONF" "metadata" "download")"
+	_sbom_field "License" "$license"
+	_sbom_field "Maintainer" "$(_config_get "$PROJECTCONF" "metadata" "maintainer")"
+	_sbom_field "Requires" "$(_config_get "$PROJECTCONF" "metadata" "depends")") > "$name.pc"
+	ret=$?
+	if [ $ret -eq 0 ]; then
+		PKG_CONFIG_PATH="$PWD" $DEBUG $BOMTOOL "$name" > "$name.spdx"
+		ret=$?
+	fi
+	return $ret
+}
+
+_sbom_field()
+{
+	key="$1"
+	value="$2"
+
+	[ -z "$value" ] || echo "$key: $value"
+}
+
+
 #target_tests
 _target_tests()
 {
@@ -229,6 +303,7 @@ _usage()
 	echo "  install" 1>&2
 	echo "  package" 1>&2
 	echo "  patch" 1>&2
+	echo "  sbom" 1>&2
 	echo "  tests" 1>&2
 	echo "  uninstall" 1>&2
 	return 1
