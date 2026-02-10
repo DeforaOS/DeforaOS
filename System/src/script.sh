@@ -62,6 +62,9 @@ _config_get()
 
 	while read line; do
 		case "$line" in
+			"#"*)
+				#ignore comments
+				;;
 			"["*"]")
 				cursection="${line#[}"
 				cursection="${cursection%]}"
