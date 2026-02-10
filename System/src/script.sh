@@ -78,6 +78,8 @@ _config_get()
 				;;
 		esac
 	done < "$filename"
+	ret=$?
+	[ $ret -eq 0 ] || return $ret
 	echo "$value"
 }
 
