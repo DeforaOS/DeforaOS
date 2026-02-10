@@ -35,7 +35,7 @@ bootstrap:
 	$(BUILDSH) -O MAKE="$(MAKE)" -O PREFIX="$(PREFIX)" bootstrap
 
 build:
-	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) build) || break; done
+	@for subdir in $(SUBDIRS); do if [ -n "$(OBJDIR)" ]; then (cd $$subdir && $(MAKE) OBJDIR="$(OBJDIR)$$subdir/" build); else (cd $$subdir && $(MAKE) build); fi || break; done
 
 configure:
 	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) configure) || break; done
@@ -50,7 +50,7 @@ patch:
 	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) patch) || break; done
 
 sbom:
-	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) sbom) || break; done
+	@for subdir in $(SUBDIRS); do if [ -n "$(OBJDIR)" ]; then (cd $$subdir && $(MAKE) OBJDIR="$(OBJDIR)$$subdir/" sbom); else (cd $$subdir && $(MAKE) sbom); fi || break; done
 
 tests:
 	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) tests) || break; done
