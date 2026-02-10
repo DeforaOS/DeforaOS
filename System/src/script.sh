@@ -357,7 +357,7 @@ if [ ! -f "$CONFIGSH" ]; then
 	_error "Must be called from a project folder ($CONFIGSH not found)"
 	exit $?
 fi
-. "$CONFIGSH"
+. "$CONFIGSH" || true
 
 clean=0
 install=0
