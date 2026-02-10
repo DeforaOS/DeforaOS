@@ -33,6 +33,7 @@ TARGZEXT=".tar.gz"
 URL=
 #executables
 [ -z "$CONFIGURE" ] && CONFIGURE='configure -v'
+DEBUG=
 FETCH='wget'
 GIT='git'
 [ -n "$MAKE" ] || MAKE='make'
@@ -43,6 +44,14 @@ TOUCH='touch'
 
 
 #functions
+#debug
+_debug()
+{
+	echo "$@" 1>&2
+	"$@"
+}
+
+
 #error
 _error()
 {
@@ -55,12 +64,12 @@ _error()
 _target_configure()
 {
 	if [ -f "$PACKAGE-$VERSION/autogen.sh" ]; then
-		(cd "$PACKAGE-$VERSION" && ./autogen.sh)
+		(cd "$PACKAGE-$VERSION" && $DEBUG ./autogen.sh)
 	fi
 	if [ -f "$PACKAGE-$VERSION/configure" ]; then
-		(cd "$PACKAGE-$VERSION" && ./configure)
-	elif [ -f "$PACKAGE-$VERSION/project.conf" ]; then
-		(cd "$PACKAGE-$VERSION" && $CONFIGURE -p "$PREFIX")
+		(cd "$PACKAGE-$VERSION" && $DEBUG ./configure)
+	elif [ -f "$PACKAGE-$VERSION/$PROJECTCONF" ]; then
+		(cd "$PACKAGE-$VERSION" && $DEBUG $CONFIGURE -p "$PREFIX")
 	fi
 }
 
@@ -126,21 +135,21 @@ _target_download()
 		git://*|http://*.git)
 			if [ ! -d "$PACKAGE-$VERSION/.git" ]; then
 				_warn "$URL: Repository access is not encrypted"
-				$GIT clone -n "$URL" "$PACKAGE-$VERSION"
+				$DEBUG $GIT clone -n "$URL" "$PACKAGE-$VERSION"
 			fi
 			;;
 		https://*.git|*.git)
 			if [ ! -d "$PACKAGE-$VERSION/.git" ]; then
-				$GIT clone -n "$URL" "$PACKAGE-$VERSION"
+				$DEBUG $GIT clone -n "$URL" "$PACKAGE-$VERSION"
 			fi
 			;;
 		ftps://*|https://*)
-			[ -f "$PACKAGE-$VERSION$TARGZEXT" ] || $FETCH "$URL"
+			[ -f "$PACKAGE-$VERSION$TARGZEXT" ] || $DEBUG $FETCH "$URL"
 			;;
 		ftp://*|http://*)
 			if [ ! -f "$PACKAGE-$VERSION$TARGZEXT" ]; then
 				_warn "$URL: Repository access is not encrypted"
-				$FETCH "$URL"
+				$DEBUG $FETCH "$URL"
 			fi
 			;;
 	esac
@@ -153,14 +162,14 @@ _target_extract()
 	case "$VERSION" in
 		git)
 			(cd "$PACKAGE-$VERSION" &&
-				$GIT checkout "$GIT_BRANCH" &&
+				$DEBUG $GIT checkout "$GIT_BRANCH" &&
 				if [ -f ".gitmodules" ]; then
-					$GIT submodule init &&
-						$GIT submodule update
+					$DEBUG $GIT submodule init &&
+						$DEBUG $GIT submodule update
 				fi)
 			;;
 		*)
-			[ -d "$PACKAGE-$VERSION" ] || $TAR -xzf "$PACKAGE-$VERSION$TARGZEXT"
+			[ -d "$PACKAGE-$VERSION" ] || $DEBUG $TAR -xzf "$PACKAGE-$VERSION$TARGZEXT"
 			;;
 	esac
 }
@@ -169,7 +178,7 @@ _target_extract()
 #target_make
 _target_make()
 {
-	(cd "$PACKAGE-$VERSION" && $MAKE "$@")
+	(cd "$PACKAGE-$VERSION" && $DEBUG $MAKE "$@")
 }
 
 
@@ -178,7 +187,7 @@ _target_package()
 {
 	$RM -r "$DESTDIR"
 	_target_make DESTDIR="$DESTDIR" 'install' &&
-	(cd "$DESTDIR" && $TAR -czf - "${PREFIX##/}") \
+	(cd "$DESTDIR" && $DEBUG $TAR -czf - "${PREFIX##/}") \
 		> "$PWD/$PACKAGE-$VERSION.pkg"
 }
 
@@ -190,8 +199,8 @@ _target_patch()
 
 	[ ! -f "$PACKAGE-$VERSION/.patch-done" ]		|| return 0
 	if [ -f "$filename" ]; then
-		(cd "$PACKAGE-$VERSION" && $PATCH -p1 < "../$filename") &&
-			$TOUCH "$PACKAGE-$VERSION/.patch-done"
+		(cd "$PACKAGE-$VERSION" && $DEBUG $PATCH -p1 < "../$filename") &&
+			$DEBUG $TOUCH "$PACKAGE-$VERSION/.patch-done"
 	fi
 }
 
@@ -199,14 +208,14 @@ _target_patch()
 #target_tests
 _target_tests()
 {
-	(cd "$PACKAGE-$VERSION" && $MAKE "$@")
+	(cd "$PACKAGE-$VERSION" && $DEBUG $MAKE "$@")
 }
 
 
 #usage
 _usage()
 {
-	echo "Usage: $PROGNAME [-c|-i|-u][-O name=value...][-P prefix] target..." 1>&2
+	echo "Usage: $PROGNAME [-c|-i|-u][-O name=value...][-P prefix][-qv] target..." 1>&2
 	echo "  -c	Perform the \"clean\" target" 1>&2
 	echo "  -i	Perform the \"install\" target" 1>&2
 	echo "  -u	Perform the \"uninstall\" target" 1>&2
@@ -241,7 +250,7 @@ fi
 clean=0
 install=0
 uninstall=0
-while getopts "ciO:P:u" name; do
+while getopts "ciO:P:quv" name; do
 	case "$name" in
 		c)
 			clean=1
@@ -255,8 +264,14 @@ while getopts "ciO:P:u" name; do
 		P)
 			PREFIX="$OPTARG"
 			;;
+		q)
+			DEBUG=
+			;;
 		u)
 			uninstall=1
+			;;
+		v)
+			DEBUG="_debug"
 			;;
 		*)
 			_usage
