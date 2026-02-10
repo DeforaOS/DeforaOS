@@ -49,6 +49,9 @@ extract:
 patch:
 	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) patch) || break; done
 
+sbom:
+	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) sbom) || break; done
+
 tests:
 	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) tests) || break; done
 
@@ -93,4 +96,4 @@ uninstall:
 		$(MAKE) OBJDIR="$(OBJDIR)$$i/" uninstall; \
 		else $(MAKE) uninstall; fi) || exit; done
 
-.PHONY: all subdirs clean distclean dist distcheck install uninstall bootstrap build configure download extract patch tests
+.PHONY: all subdirs clean distclean dist distcheck install uninstall bootstrap build configure download extract patch sbom tests
