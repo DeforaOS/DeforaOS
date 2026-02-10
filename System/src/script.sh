@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 #$Id$
 #Copyright (c) 2012-2026 Pierre Pronchery <khorben@defora.org>
 #
