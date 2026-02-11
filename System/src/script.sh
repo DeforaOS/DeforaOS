@@ -73,8 +73,8 @@ _config_get()
 			*"="*)
 				curvariable="${line%%=*}"
 				curvalue="${line#*=}"
-				[ "$cursection" = "$section" \
-					-a "$curvariable" = "$variable" ] &&
+				[ "$cursection" != "$section" \
+					-o "$curvariable" != "$variable" ] ||
 					value="$curvalue"
 				;;
 		esac
