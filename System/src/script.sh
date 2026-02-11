@@ -330,7 +330,9 @@ _usage()
 	echo "Usage: $PROGNAME [-c|-i|-u][-O name=value...][-P prefix][-qv] target..." 1>&2
 	echo "  -c	Perform the \"clean\" target" 1>&2
 	echo "  -i	Perform the \"install\" target" 1>&2
+	echo "  -q	Run in quiet mode" 1>&2
 	echo "  -u	Perform the \"uninstall\" target" 1>&2
+	echo "  -v	Run in verbose mode" 1>&2
 	echo "Available targets:" 1>&2
 	echo "  build" 1>&2
 	echo "  configure" 1>&2
