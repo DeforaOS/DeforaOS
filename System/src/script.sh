@@ -26,7 +26,7 @@
 
 
 #variables
-CONFIGSH="config.sh"
+CONFIGSH="./config.sh"
 DESTDIR="$PWD/destdir"
 GIT_BRANCH='master'
 PREFIX="/usr/local"
