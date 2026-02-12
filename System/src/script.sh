@@ -27,7 +27,7 @@
 
 #variables
 CONFIGSH="./config.sh"
-DESTDIR="$PWD/destdir"
+DESTDIR=
 GIT_BRANCH='master'
 PREFIX="/usr/local"
 LIBDIR="$PREFIX/lib"
@@ -45,6 +45,7 @@ GIT='git'
 INSTALL="install"
 [ -n "$MAKE" ] || MAKE='make'
 MKDIR="mkdir -p"
+MKTEMP="mktemp"
 PATCH="patch"
 RM='rm -f'
 TAR='tar'
@@ -237,10 +238,11 @@ _target_make()
 #target_package
 _target_package()
 {
-	$RM -r "$DESTDIR"
-	_target_make DESTDIR="$DESTDIR" 'install' &&
-	(cd "$DESTDIR" && $DEBUG $TAR -czf - "${PREFIX##/}") \
-		> "$PWD/$PACKAGE-$VERSION.pkg"
+	destdir=$($DEBUG $MKTEMP -d)
+	package="$PWD/$PACKAGE-$VERSION.pkg"
+
+	_target_make DESTDIR="$destdir" 'install' &&
+	(cd "$DESTDIR" && $DEBUG $TAR -czf "$package" "${PREFIX#/}")
 }
 
 
