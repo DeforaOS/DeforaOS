@@ -35,10 +35,11 @@ PROJECTCONF="project.conf"
 PROGNAME="script.sh"
 TARGZEXT=".tar.gz"
 URL=
+VERBOSE=1
 #executables
 BOMTOOL="bomtool"
 [ -z "$CONFIGURE" ] && CONFIGURE='configure -v'
-DEBUG=
+DEBUG="_debug"
 FETCH='wget'
 GIT='git'
 INSTALL="install"
@@ -88,7 +89,7 @@ _config_get()
 #debug
 _debug()
 {
-	echo "$@" 1>&2
+	[ $VERBOSE -lt 3 ] || echo "$@" 1>&2
 	"$@"
 }
 
@@ -98,6 +99,13 @@ _error()
 {
 	echo "$PROGNAME: error: $@" 1>&2
 	return 2
+}
+
+
+#info
+_info()
+{
+	[ $VERBOSE -lt 2 ] || echo "$PROGNAME: $@"
 }
 
 
@@ -381,13 +389,13 @@ while getopts "ciO:P:quv" name; do
 			LIBDIR="$PREFIX/lib"
 			;;
 		q)
-			DEBUG=
+			VERBOSE=0
 			;;
 		u)
 			uninstall=1
 			;;
 		v)
-			DEBUG="_debug"
+			VERBOSE=$((VERBOSE + 1))
 			;;
 		*)
 			_usage
