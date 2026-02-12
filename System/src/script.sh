@@ -244,17 +244,18 @@ _target_package()
 	if [ "$version" = "git" -a -f "$PACKAGE-$VERSION/$PROJECTCONF" ]; then
 		v=$(_config_get "$PACKAGE-$VERSION/$PROJECTCONF" "" "version")
 		[ -n "$v" ] && version="$v+git"
-		filename="$PWD/$PACKAGE-$version.pkg"
+		filename="$OBJDIR$PACKAGE-$version.pkg"
 	else
-		filename="$PWD/$PACKAGE-$VERSION.pkg"
+		filename="$OBJDIR$PACKAGE-$VERSION.pkg"
 		[ ! -f "$filename" ]				|| return 0
 	fi
 
 	destdir=$($DEBUG $MKTEMP -d)
 	_target_make DESTDIR="$destdir" 'install' &&
-		(cd "$destdir" && $DEBUG $TAR -czf "$filename" "${PREFIX#/}")
+		(cd "$destdir" && $DEBUG $TAR -czf - "${PREFIX#/}") > "$filename"
 	ret=$?
 	$DEBUG $RM -r -- "$destdir"
+	[ $ret -eq 0 ] || $RM -- "$filename"
 	return $ret
 }
 
