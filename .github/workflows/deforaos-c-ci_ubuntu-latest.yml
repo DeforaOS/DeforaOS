@@ -38,10 +38,12 @@ jobs:
           libgtk-3-dev \
           libgtk-vnc-2.0-dev \
           libsofia-sip-ua-glib-dev \
+          libxml2-utils \
           gcc \
           gtk-doc-tools \
           make
     - name: bootstrap
       run: make bootstrap < /dev/null
     - name: build
-      run: PATH="$PWD/tooldir-$(uname -s)-amd64/bin:$PATH" make install
+      run: PATH="$PWD/tooldir-$(uname -s)-amd64/bin:$PATH" \
+           PKG_CONFIG_PATH=/usr/local/lib/pkgconfig make install
