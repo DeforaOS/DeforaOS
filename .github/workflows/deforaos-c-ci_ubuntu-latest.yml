@@ -44,4 +44,4 @@ jobs:
     - name: bootstrap
       run: make bootstrap < /dev/null
     - name: build
-      run: make install
+      run: PATH="Apps/Devel/src/configure/configure-git/tools:$PATH" make install
