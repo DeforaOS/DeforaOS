@@ -44,4 +44,4 @@ jobs:
     - name: bootstrap
       run: make bootstrap < /dev/null
     - name: build
-      run: PATH="$PWD/tools-$(uname -s)-amd64/bin:$PATH" make install
+      run: PATH="$PWD/tooldir-$(uname -s)-amd64/bin:$PATH" make install
