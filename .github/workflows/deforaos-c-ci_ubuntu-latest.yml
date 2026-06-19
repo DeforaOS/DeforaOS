@@ -43,5 +43,4 @@ jobs:
           make
     - name: bootstrap
       run: make bootstrap < /dev/null
-    - name: build
-      run: PATH="$PWD/Apps/Devel/src/configure/configure-git/tools:$PATH" make install
+      run: PATH="$PWD/tools-$(uname -s)-amd64/bin:$PATH" make install
