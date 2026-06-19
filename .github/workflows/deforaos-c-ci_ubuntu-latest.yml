@@ -13,5 +13,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          gcc make
     - name: bootstrap
       run: make bootstrap < /dev/null
