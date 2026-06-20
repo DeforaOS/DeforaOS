@@ -67,7 +67,7 @@ distcheck: dist
 	cd "$(PACKAGE)-$(VERSION)" && $(MAKE) dist
 	$(RM) -r -- $(PACKAGE)-$(VERSION)
 
-install: all
+install: build
 	../script.sh -P "$(DESTDIR)$(PREFIX)" -i -- "build"
 
 uninstall:
