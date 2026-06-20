@@ -46,6 +46,6 @@ jobs:
       run: make bootstrap < /dev/null
     - name: Build
       run: |
-        sudo chgrp $(id -g) /usr/local
-        sudo chmod g+w /usr/local
+        sudo chgrp -R $(id -g) /usr/local
+        sudo chmod -R g+w /usr/local
         PATH="$PWD/tooldir-$(uname -s)-amd64/bin:$PATH" make install
