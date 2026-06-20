@@ -84,7 +84,7 @@ distcheck: dist
 	cd "$(PACKAGE)-$(VERSION)" && $(MAKE) dist
 	$(RM) -r -- $(PACKAGE)-$(VERSION)
 
-install: all
+install:
 	@for i in $(SUBDIRS); do (cd "$$i" && \
 		if [ -n "$(OBJDIR)" ]; then \
 		$(MAKE) OBJDIR="$(OBJDIR)$$i/" install; \
