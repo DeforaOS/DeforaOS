@@ -45,4 +45,7 @@ jobs:
     - name: Bootstrap
       run: make bootstrap < /dev/null
     - name: Build
-      run: PATH="$PWD/tooldir-$(uname -s)-amd64/bin:$PATH" PKG_CONFIG_PATH=/usr/local/lib/pkgconfig make install
+      run: |
+        sudo chgrp $(id -g) /usr/local
+        sudo chmod g+w /usr/local
+        PATH="$PWD/tooldir-$(uname -s)-amd64/bin:$PATH" make install
