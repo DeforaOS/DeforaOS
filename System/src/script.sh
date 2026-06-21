@@ -150,7 +150,7 @@ _target()
 			[ ! -f "$PACKAGE-$VERSION/Makefile" ] \
 				|| _target_make "$target"
 			;;
-		configure|download|extract|package|patch|sbom)
+		configure|download|extract|package|patch|sbom|sbominstall)
 			"_target_$target"
 			;;
 		*)
@@ -289,13 +289,6 @@ _target_sbom()
 		return $?
 	fi
 
-	#uninstall
-	if [ $uninstall -ne 0 ]; then
-		$DEBUG $RM -- "$DESTDIR$sbomdir/$name.pc"
-		$DEBUG $RM -- "$DESTDIR$spdxdir/$name.spdx"
-		return $?
-	fi
-
 	#version
 	if [ "$version" = "git" -a -f "$PACKAGE-$VERSION/$PROJECTCONF" ]; then
 		v=$(_config_get "$PACKAGE-$VERSION/$PROJECTCONF" "" "version")
@@ -323,13 +316,10 @@ _target_sbom()
 	#generate the SPDX file
 	PKG_CONFIG_PATH="$PWD:$DESTDIR$sbomdir" $DEBUG $BOMTOOL "$name" > "$OBJDIR$name.spdx"
 	res=$?
-	[ $res -eq 0 ] || return $res
-
-	[ $install -eq 0 ] && return 0
-
-	$DEBUG $MKDIR -- "$DESTDIR$spdxdir" &&
-		$DEBUG $INSTALL -m 0644 "$OBJDIR$name.pc" "$DESTDIR$sbomdir/$name.pc" &&
-		$DEBUG $INSTALL -m 0644 "$OBJDIR$name.spdx" "$DESTDIR$spdxdir/$name.spdx"
+	if [ $res -ne 0 ]; then
+		_error "$name.spdx: could not generate the SBOM file"
+		return $res
+	fi
 }
 
 _sbom_field()
@@ -338,6 +328,32 @@ _sbom_field()
 	value="$2"
 
 	[ -z "$value" ] || echo "$key: $value"
+}
+
+
+#target_sbominstall
+_target_sbominstall()
+{
+	sbomdir="$LIBDIR/sbom"
+	spdxdir="$sbomdir/SPDX-2.2"
+	name="$PACKAGE"
+	[ -n "$VENDOR" ] && name="$VENDOR-$name"
+	name=$(echo "$name" | $TR A-Z a-z)
+
+	#clean
+	[ $clean -ne 0 ] && return 0
+
+	#uninstall
+	if [ $uninstall -ne 0 ]; then
+		$DEBUG $RM -- "$DESTDIR$sbomdir/$name.pc"
+		$DEBUG $RM -- "$DESTDIR$spdxdir/$name.spdx"
+		return $?
+	fi
+
+	#install
+	$DEBUG $MKDIR -- "$DESTDIR$spdxdir" &&
+		$DEBUG $INSTALL -m 0644 "$OBJDIR$name.pc" "$DESTDIR$sbomdir/$name.pc" &&
+		$DEBUG $INSTALL -m 0644 "$OBJDIR$name.spdx" "$DESTDIR$spdxdir/$name.spdx"
 }
 
 
@@ -366,6 +382,7 @@ _usage()
 	echo "  package" 1>&2
 	echo "  patch" 1>&2
 	echo "  sbom" 1>&2
+	echo "  sbominstall" 1>&2
 	echo "  tests" 1>&2
 	echo "  uninstall" 1>&2
 	return 1

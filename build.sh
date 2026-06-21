@@ -483,6 +483,7 @@ _usage()
 	echo "  image		Create a specific image" 1>&2
 	echo "  install	Build and install in the system" 1>&2
 	echo "  sbom	Generate SBOM files" 1>&2
+	echo "  sbominstall	Install SBOM files" 1>&2
 	echo "  uninstall	Uninstall everything" 1>&2
 	if [ -n "$1" ]; then
 		echo 1>&2
@@ -624,7 +625,7 @@ while [ $# -gt 0 ]; do
 				exit $?
 			fi
 			;;
-		clean|distclean|sbom|uninstall)
+		clean|distclean|sbom|sbominstall|uninstall)
 			_info "Making target \"$target\" on $TARGET"
 			(_target "$target")
 			if [ $? -ne 0 ]; then
