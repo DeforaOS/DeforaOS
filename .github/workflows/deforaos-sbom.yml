@@ -17,6 +17,8 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          pkgconf
+          gcc make pkgconf
+    - name: Bootstrap
+      run: make bootstrap < /dev/null
     - name: Generate SBOM files
       run: make DESTDIR="$PWD/destdir" sbominstall
