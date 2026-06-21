@@ -89,7 +89,7 @@ _config_get()
 #debug
 _debug()
 {
-	[ $VERBOSE -lt 3 ] || echo "$@" 1>&2
+	[ $VERBOSE -lt 1 ] || echo "$@" 1>&2
 	"$@"
 }
 
