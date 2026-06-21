@@ -409,20 +409,6 @@ _bootstrap_wrap()
 }
 
 
-#target_clean
-target_clean()
-{
-	_target "clean"
-}
-
-
-#target_distclean
-target_distclean()
-{
-	_target "distclean"
-}
-
-
 #target_image
 target_image()
 {
@@ -480,20 +466,6 @@ _install_do()
 		esac
 	done
 	return 0
-}
-
-
-#target_sbom
-target_sbom()
-{
-	_target "sbom"
-}
-
-
-#target_uninstall
-target_uninstall()
-{
-	_target "uninstall"
 }
 
 
@@ -644,9 +616,17 @@ while [ $# -gt 0 ]; do
 	shift
 
 	case "$target" in
-		all|bootstrap|clean|distclean|image|install|sbom|uninstall)
+		all|bootstrap|image|install)
 			_info "Making target \"$target\" on $TARGET"
 			("target_$target")
+			if [ $? -ne 0 ]; then
+				_error "$target: Could not complete target"
+				exit $?
+			fi
+			;;
+		clean|distclean|sbom|uninstall)
+			_info "Making target \"$target\" on $TARGET"
+			(_target "$target")
 			if [ $? -ne 0 ]; then
 				_error "$target: Could not complete target"
 				exit $?
