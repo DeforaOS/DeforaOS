@@ -1,7 +1,7 @@
 PACKAGE	= libSystem
 VERSION	= git
 VENDOR	= DeforaOS
-TARGETS	= build configure download extract patch sbom tests
+TARGETS	= build configure download extract patch sbom sbominstall tests
 OBJDIR	=
 PREFIX	= /usr/local
 DESTDIR	=
@@ -13,7 +13,7 @@ MKDIR	= mkdir -m 0755 -p
 INSTALL	= install
 
 
-all: build configure download extract patch
+all: build configure download extract patch sbom sbominstall
 
 build: configure
 	../script.sh -P "$(PREFIX)" -- "build"
@@ -33,6 +33,9 @@ patch: extract
 sbom:
 	../script.sh -P "$(PREFIX)" -- "sbom"
 
+sbominstall: sbom
+	../script.sh -P "$(PREFIX)" -- "sbominstall"
+
 tests: patch
 	../script.sh -P "$(PREFIX)" -- "tests"
 
@@ -43,6 +46,7 @@ clean:
 	../script.sh -c -P "$(PREFIX)" -- "extract"
 	../script.sh -c -P "$(PREFIX)" -- "patch"
 	../script.sh -c -P "$(PREFIX)" -- "sbom"
+	../script.sh -c -P "$(PREFIX)" -- "sbominstall"
 	../script.sh -c -P "$(PREFIX)" -- "tests"
 
 distclean: clean
@@ -73,4 +77,4 @@ install: build
 uninstall:
 	../script.sh -P "$(DESTDIR)$(PREFIX)" -u -- "build"
 
-.PHONY: all clean distclean dist distcheck install uninstall build configure download extract patch sbom tests
+.PHONY: all clean distclean dist distcheck install uninstall build configure download extract patch sbom sbominstall tests

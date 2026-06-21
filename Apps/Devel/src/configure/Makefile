@@ -1,7 +1,7 @@
 PACKAGE	= configure
 VERSION	= git
 VENDOR	= DeforaOS
-TARGETS	= build configure download extract patch sbom tests
+TARGETS	= build configure download extract patch sbom sbominstall tests
 OBJDIR	=
 PREFIX	= /usr/local
 DESTDIR	=
@@ -33,6 +33,9 @@ patch: extract
 sbom:
 	../../../../System/src/script.sh -P "$(PREFIX)" -- "sbom"
 
+sbominstall: sbom
+	../../../../System/src/script.sh -P "$(PREFIX)" -- "sbominstall"
+
 tests: patch
 	../../../../System/src/script.sh -P "$(PREFIX)" -- "tests"
 
@@ -43,6 +46,7 @@ clean:
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "extract"
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "patch"
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "sbom"
+	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "sbominstall"
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "tests"
 
 distclean: clean
@@ -73,4 +77,4 @@ install: build
 uninstall:
 	../../../../System/src/script.sh -P "$(DESTDIR)$(PREFIX)" -u -- "build"
 
-.PHONY: all clean distclean dist distcheck install uninstall build configure download extract patch sbom tests
+.PHONY: all clean distclean dist distcheck install uninstall build configure download extract patch sbom sbominstall tests

@@ -52,6 +52,9 @@ patch:
 sbom:
 	@for subdir in $(SUBDIRS); do if [ -n "$(OBJDIR)" ]; then (cd $$subdir && $(MAKE) OBJDIR="$(OBJDIR)$$subdir/" sbom); else (cd $$subdir && $(MAKE) sbom); fi || break; done
 
+sbominstall:
+	@for subdir in $(SUBDIRS); do if [ -n "$(OBJDIR)" ]; then (cd $$subdir && $(MAKE) OBJDIR="$(OBJDIR)$$subdir/" sbominstall); else (cd $$subdir && $(MAKE) sbominstall); fi || break; done
+
 tests:
 	@for subdir in $(SUBDIRS); do (cd "$$subdir" && $(MAKE) tests) || break; done
 
@@ -96,4 +99,4 @@ uninstall:
 		$(MAKE) OBJDIR="$(OBJDIR)$$i/" uninstall; \
 		else $(MAKE) uninstall; fi) || exit; done
 
-.PHONY: all subdirs clean distclean dist distcheck install uninstall bootstrap build configure download extract patch sbom tests
+.PHONY: all subdirs clean distclean dist distcheck install uninstall bootstrap build configure download extract patch sbom sbominstall tests
