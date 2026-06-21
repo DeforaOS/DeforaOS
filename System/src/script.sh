@@ -27,7 +27,6 @@
 
 #variables
 CONFIGSH="./config.sh"
-DESTDIR=
 GIT_BRANCH='master'
 PREFIX="/usr/local"
 LIBDIR="$PREFIX/lib"
