@@ -1,7 +1,7 @@
 PACKAGE	= libSystem
 VERSION	= git
 VENDOR	= DeforaOS
-TARGETS	= build configure download extract patch sbom sbominstall tests
+TARGETS	= build configure $(OBJDIR)deforaos-libsystem.pc download extract patch sbom sbominstall tests
 OBJDIR	=
 PREFIX	= /usr/local
 DESTDIR	=
@@ -21,6 +21,9 @@ build: configure
 configure: patch
 	../script.sh -P "$(PREFIX)" -- "configure"
 
+$(OBJDIR)deforaos-libsystem.pc: project.conf
+	../script.sh -P "$(PREFIX)" -- "$(OBJDIR)deforaos-libsystem.pc"
+
 download:
 	../script.sh -P "$(PREFIX)" -O URL=https://git.defora.org/DeforaOS/$(PACKAGE).git -- "download"
 
@@ -30,7 +33,7 @@ extract: download
 patch: extract
 	../script.sh -P "$(PREFIX)" -- "patch"
 
-sbom:
+sbom: $(OBJDIR)deforaos-libsystem.pc
 	../script.sh -P "$(PREFIX)" -- "sbom"
 
 sbominstall: sbom
@@ -42,6 +45,7 @@ tests: patch
 clean:
 	../script.sh -c -P "$(PREFIX)" -- "build"
 	../script.sh -c -P "$(PREFIX)" -- "configure"
+	../script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)deforaos-libsystem.pc"
 	../script.sh -c -P "$(PREFIX)" -O URL=https://git.defora.org/DeforaOS/$(PACKAGE).git -- "download"
 	../script.sh -c -P "$(PREFIX)" -- "extract"
 	../script.sh -c -P "$(PREFIX)" -- "patch"
@@ -50,6 +54,7 @@ clean:
 	../script.sh -c -P "$(PREFIX)" -- "tests"
 
 distclean: clean
+	$(RM) -- $(OBJDIR)deforaos-libsystem.pc
 
 dist:
 	$(RM) -r -- $(OBJDIR)$(PACKAGE)-$(VERSION)
