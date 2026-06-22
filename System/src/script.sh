@@ -47,6 +47,7 @@ MKDIR="mkdir -p"
 MKTEMP="mktemp"
 PATCH="patch"
 RM='rm -f'
+SPDXTOOL="spdxtool"
 TAR='tar'
 TOUCH='touch'
 TR="tr"
@@ -284,7 +285,8 @@ _target_sbom()
 
 	#clean
 	if [ $clean -ne 0 ]; then
-		$DEBUG $RM -- "$OBJDIR$name.pc" "$OBJDIR$name.spdx"
+		$DEBUG $RM -- "$OBJDIR$name.pc" "$OBJDIR$name.jsonld" \
+			"$OBJDIR$name.spdx"
 		return $?
 	fi
 
@@ -312,11 +314,16 @@ _target_sbom()
 	res=$?
 	[ $res -eq 0 ] || return $res
 
-	#generate the SPDX file
+	#generate SBOM (SPDX version 3)
+	PKG_CONFIG_PATH="$PWD:$DESTDIR$sbomdir" $DEBUG $SPDXTOOL "$name" > "$OBJDIR$name.jsonld"
+	[ $? -eq 0 ] && return 0
+	_error "$name.jsonld: could not generate SBOM (SPDX version 3)"
+
+	#generate SBOM (SPDX version 2)
 	PKG_CONFIG_PATH="$PWD:$DESTDIR$sbomdir" $DEBUG $BOMTOOL "$name" > "$OBJDIR$name.spdx"
 	res=$?
 	if [ $res -ne 0 ]; then
-		_error "$name.spdx: could not generate the SBOM file"
+		_error "$name.spdx: could not generate SBOM (SPDX version 2)"
 		return $res
 	fi
 }
@@ -334,6 +341,7 @@ _sbom_field()
 _target_sbominstall()
 {
 	sbomdir="$LIBDIR/sbom"
+	jsonlddir="$sbomdir/SPDX-3.0.1"
 	spdxdir="$sbomdir/SPDX-2.2"
 	name="$PACKAGE"
 	[ -n "$VENDOR" ] && name="$VENDOR-$name"
@@ -344,15 +352,25 @@ _target_sbominstall()
 
 	#uninstall
 	if [ $uninstall -ne 0 ]; then
+		$DEBUG $RM -- "$DESTDIR$jsonlddir/$name.jsonld"
 		$DEBUG $RM -- "$DESTDIR$sbomdir/$name.pc"
 		$DEBUG $RM -- "$DESTDIR$spdxdir/$name.spdx"
 		return $?
 	fi
 
 	#install
-	$DEBUG $MKDIR -- "$DESTDIR$spdxdir" &&
-		$DEBUG $INSTALL -m 0644 "$OBJDIR$name.pc" "$DESTDIR$sbomdir/$name.pc" &&
-		$DEBUG $INSTALL -m 0644 "$OBJDIR$name.spdx" "$DESTDIR$spdxdir/$name.spdx"
+	$DEBUG $MKDIR -- "$DESTDIR$sbomdir"			|| return $?
+	$DEBUG $INSTALL -m 0644 "$OBJDIR$name.pc" "$DESTDIR$sbomdir/$name.pc" \
+								|| return $?
+	if [ -f "$OBJDIR$name.jsonld" ]; then
+		$DEBUG $MKDIR -- "$DESTDIR$jsonlddir"		|| return $?
+		$DEBUG $INSTALL -m 0644 "$OBJDIR$name.jsonld" \
+			"$DESTDIR$jsonlddir/$name.jsonld"
+	else
+		$DEBUG $MKDIR -- "$DESTDIR$spdxdir"		|| return $?
+		$DEBUG $INSTALL -m 0644 "$OBJDIR$name.spdx" \
+			"$DESTDIR$spdxdir/$name.spdx"
+	fi
 }
 
 
