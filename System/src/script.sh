@@ -127,6 +127,9 @@ _target_configure()
 #target
 _target()
 {
+	name="$PACKAGE"
+	[ -n "$VENDOR" ] && name="$VENDOR-$name"
+	name=$(echo "$name" | $TR A-Z a-z)
 	target="$1"
 
 	if [ $clean -ne 0 -a "$target" != "clean" ]; then
@@ -134,6 +137,15 @@ _target()
 		return $?
 	fi
 	case "$target" in
+		$OBJDIR$name.jsonld)
+			_target_sbom_jsonld "$target"
+			;;
+		$OBJDIR$name.pc)
+			_target_sbom_pc "$target"
+			;;
+		$OBJDIR$name.spdx)
+			_target_sbom_spdx "$target"
+			;;
 		all|install|tests|uninstall)
 			_target_make "$target"
 			;;
@@ -276,17 +288,44 @@ _target_patch()
 #target_sbom
 _target_sbom()
 {
-	sbomdir="$LIBDIR/sbom"
-	spdxdir="$sbomdir/SPDX-2.2"
 	name="$PACKAGE"
 	[ -n "$VENDOR" ] && name="$VENDOR-$name"
 	name=$(echo "$name" | $TR A-Z a-z)
+
+	_target_sbom_pc "$OBJDIR$name.pc"			|| return $?
+	_target_sbom_jsonld "$OBJDIR$name.jsonld" ||
+		_target_sbom_spdx "$OBJDIR$name.spdx"
+}
+
+
+#target_sbom_jsonld
+_target_sbom_jsonld()
+{
+	target="$1"
+
+	#clean
+	if [ $clean -ne 0 ]; then
+		$DEBUG $RM -- "$target"
+		return $?
+	fi
+
+	#generate SBOM (SPDX version 3)
+	PKG_CONFIG_PATH="$PWD:$DESTDIR$sbomdir" $DEBUG $SPDXTOOL "$name" > "$target"
+	[ $? -eq 0 ] && return 0
+	$DEBUG $RM -- "$target"
+	_error "${target#$OBJDIR}: could not generate SBOM (SPDX version 3)"
+}
+
+
+#target_sbom_pc
+_target_sbom_pc()
+{
+	target="$1"
 	version="$VERSION"
 
 	#clean
 	if [ $clean -ne 0 ]; then
-		$DEBUG $RM -- "$OBJDIR$name.pc" "$OBJDIR$name.jsonld" \
-			"$OBJDIR$name.spdx"
+		$DEBUG $RM -- "$target"
 		return $?
 	fi
 
@@ -302,38 +341,45 @@ _target_sbom()
 
 	#generate the pkgconfig file
 	[ -n "$OBJDIR" ] && $DEBUG $MKDIR -- "$OBJDIR"
-	(_sbom_field "Name" "$name"
-	_sbom_field "Description" "$(_config_get "$PROJECTCONF" "metadata" "description")"
-	_sbom_field "Version" "$version"
-	_sbom_field "Copyright" "$(_config_get "$PROJECTCONF" "metadata" "copyright")"
-	_sbom_field "URL" "$(_config_get "$PROJECTCONF" "metadata" "homepage")"
-	_sbom_field "Source" "$(_config_get "$PROJECTCONF" "metadata" "download")"
-	_sbom_field "License" "$license"
-	_sbom_field "Maintainer" "$(_config_get "$PROJECTCONF" "metadata" "maintainer")"
-	_sbom_field "Requires" "$(_config_get "$PROJECTCONF" "metadata" "depends")") > "$OBJDIR$name.pc"
-	res=$?
-	[ $res -eq 0 ] || return $res
-
-	#generate SBOM (SPDX version 3)
-	PKG_CONFIG_PATH="$PWD:$DESTDIR$sbomdir" $DEBUG $SPDXTOOL "$name" > "$OBJDIR$name.jsonld"
+	(_sbom_pc_field "Name" "$name"
+	_sbom_pc_field "Description" "$(_config_get "$PROJECTCONF" "metadata" "description")"
+	_sbom_pc_field "Version" "$version"
+	_sbom_pc_field "Copyright" "$(_config_get "$PROJECTCONF" "metadata" "copyright")"
+	_sbom_pc_field "URL" "$(_config_get "$PROJECTCONF" "metadata" "homepage")"
+	_sbom_pc_field "Source" "$(_config_get "$PROJECTCONF" "metadata" "download")"
+	_sbom_pc_field "License" "$license"
+	_sbom_pc_field "Maintainer" "$(_config_get "$PROJECTCONF" "metadata" "maintainer")"
+	_sbom_pc_field "Requires" "$(_config_get "$PROJECTCONF" "metadata" "depends")") > "$target"
 	[ $? -eq 0 ] && return 0
-	_error "$name.jsonld: could not generate SBOM (SPDX version 3)"
-
-	#generate SBOM (SPDX version 2)
-	PKG_CONFIG_PATH="$PWD:$DESTDIR$sbomdir" $DEBUG $BOMTOOL "$name" > "$OBJDIR$name.spdx"
-	res=$?
-	if [ $res -ne 0 ]; then
-		_error "$name.spdx: could not generate SBOM (SPDX version 2)"
-		return $res
-	fi
+	$DEBUG $RM -- "$target"
+	_error "${target#$OBJDIR}: could not generate SBOM (pkg-config)"
 }
 
-_sbom_field()
+_sbom_pc_field()
 {
 	key="$1"
 	value="$2"
 
 	[ -z "$value" ] || echo "$key: $value"
+}
+
+
+#target_sbom_spdx
+_target_sbom_spdx()
+{
+	target="$1"
+
+	#clean
+	if [ $clean -ne 0 ]; then
+		$DEBUG $RM -- "$target"
+		return $?
+	fi
+
+	#generate SBOM (SPDX version 2)
+	PKG_CONFIG_PATH="$PWD:$DESTDIR$sbomdir" $DEBUG $BOMTOOL "$name" > "$target"
+	[ $? -eq 0 ] && return 0
+	$DEBUG $RM -- "$target"
+	_error "${target#$OBJDIR}: could not generate SBOM (SPDX version 2)"
 }
 
 
