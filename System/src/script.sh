@@ -128,7 +128,7 @@ _target_configure()
 _target()
 {
 	name="$PACKAGE"
-	[ -n "$VENDOR" ] && name="$VENDOR-$name"
+	[ -n "$VENDOR" -a "$name" = "${name#$VENDOR}" ] && name="$VENDOR-$name"
 	name=$(echo "$name" | $TR A-Z a-z)
 	target="$1"
 
@@ -289,7 +289,7 @@ _target_patch()
 _target_sbom()
 {
 	name="$PACKAGE"
-	[ -n "$VENDOR" ] && name="$VENDOR-$name"
+	[ -n "$VENDOR" -a "$name" = "${name#$VENDOR}" ] && name="$VENDOR-$name"
 	name=$(echo "$name" | $TR A-Z a-z)
 
 	_target_sbom_jsonld "$OBJDIR$name.jsonld" ||
@@ -391,7 +391,7 @@ _target_sbominstall()
 	jsonlddir="$sbomdir/SPDX-3.0.1"
 	spdxdir="$sbomdir/SPDX-2.2"
 	name="$PACKAGE"
-	[ -n "$VENDOR" ] && name="$VENDOR-$name"
+	[ -n "$VENDOR" -a "$name" = "${name#$VENDOR}" ] && name="$VENDOR-$name"
 	name=$(echo "$name" | $TR A-Z a-z)
 
 	#clean
