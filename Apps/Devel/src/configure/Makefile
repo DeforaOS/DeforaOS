@@ -1,7 +1,7 @@
 PACKAGE	= configure
 VERSION	= git
 VENDOR	= DeforaOS
-TARGETS	= build configure download extract patch sbom sbominstall tests
+TARGETS	= build configure $(OBJDIR)deforaos-configure.pc download extract patch sbom sbominstall tests
 OBJDIR	=
 PREFIX	= /usr/local
 DESTDIR	=
@@ -13,13 +13,16 @@ MKDIR	= mkdir -m 0755 -p
 INSTALL	= install
 
 
-all: build configure download extract patch
+all: build
 
 build: configure
 	../../../../System/src/script.sh -P "$(PREFIX)" -- "build"
 
 configure: patch
 	../../../../System/src/script.sh -P "$(PREFIX)" -- "configure"
+
+$(OBJDIR)deforaos-configure.pc: project.conf
+	../../../../System/src/script.sh -P "$(PREFIX)" -- "$(OBJDIR)deforaos-configure.pc"
 
 download:
 	../../../../System/src/script.sh -P "$(PREFIX)" -O URL=https://git.defora.org/DeforaOS/$(PACKAGE).git -- "download"
@@ -30,7 +33,7 @@ extract: download
 patch: extract
 	../../../../System/src/script.sh -P "$(PREFIX)" -- "patch"
 
-sbom:
+sbom: $(OBJDIR)deforaos-configure.pc
 	../../../../System/src/script.sh -P "$(PREFIX)" -- "sbom"
 
 sbominstall: sbom
@@ -42,6 +45,7 @@ tests: patch
 clean:
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "build"
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "configure"
+	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "$(OBJDIR)deforaos-configure.pc"
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -O URL=https://git.defora.org/DeforaOS/$(PACKAGE).git -- "download"
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "extract"
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "patch"
@@ -50,6 +54,7 @@ clean:
 	../../../../System/src/script.sh -c -P "$(PREFIX)" -- "tests"
 
 distclean: clean
+	$(RM) -- $(OBJDIR)deforaos-configure.pc
 
 dist:
 	$(RM) -r -- $(OBJDIR)$(PACKAGE)-$(VERSION)
