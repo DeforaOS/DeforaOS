@@ -30,6 +30,7 @@ CONFIGSH="./config.sh"
 GIT_BRANCH='master'
 PREFIX="/usr/local"
 LIBDIR="$PREFIX/lib"
+PACKAGE_TARGETS="install sbominstall"
 PROJECTCONF="project.conf"
 PROGNAME="script.sh"
 TARGZEXT=".tar.gz"
@@ -40,6 +41,7 @@ BOMTOOL="bomtool"
 [ -z "$CONFIGURE" ] && CONFIGURE='configure -v'
 DEBUG="_debug"
 FETCH='wget'
+FIND='find'
 GIT='git'
 INSTALL="install"
 [ -n "$MAKE" ] || MAKE='make'
@@ -47,10 +49,12 @@ MKDIR="mkdir -p"
 MKTEMP="mktemp"
 PATCH="patch"
 RM='rm -f'
+SORT='sort'
 SPDXTOOL="spdxtool"
 TAR='tar'
 TOUCH='touch'
 TR="tr"
+XZ="xz"
 
 
 #functions
@@ -250,24 +254,42 @@ _target_make()
 #target_package
 _target_package()
 {
+	target="$1"
+	ret=0
 	version="$VERSION"
+	tarargs="-cf"
+	taropts="--owner root:0 --group wheel:0"
 
-	#version
-	if [ "$version" = "git" -a -f "$PACKAGE-$VERSION/$PROJECTCONF" ]; then
-		v=$(_config_get "$PACKAGE-$VERSION/$PROJECTCONF" "" "version")
-		[ -n "$v" ] && version="$v+git"
-		filename="$OBJDIR$PACKAGE-$version.pkg"
-	else
-		filename="$OBJDIR$PACKAGE-$VERSION.pkg"
-		[ ! -f "$filename" ]				|| return 0
+	if [ $# -eq 0 -o -z "$target" ]; then
+		#version
+		if [ "$version" = "git" -a -f "$PACKAGE-$VERSION/$PROJECTCONF" ]; then
+			v=$(_config_get "$PACKAGE-$VERSION/$PROJECTCONF" "" "version")
+			#TODO obtain the 7-character commit hash and mark if "dirty"
+			[ -n "$v" ] && version="$v+git"
+			target="$OBJDIR$PACKAGE-$version.pkg"
+		else
+			target="$OBJDIR$PACKAGE-$VERSION.pkg"
+			[ ! -f "$target" ]			|| return 0
+		fi
 	fi
 
 	destdir=$($DEBUG $MKTEMP -d)
-	_target_make DESTDIR="$destdir" 'install' &&
-		(cd "$destdir" && $DEBUG $TAR -czf - "${PREFIX#/}") > "$filename"
-	ret=$?
-	$DEBUG $RM -r -- "$destdir"
-	[ $ret -eq 0 ] || $RM -- "$filename"
+	target2=$($DEBUG $MKTEMP)
+	$DEBUG $MAKE DESTDIR="$destdir" $PACKAGE_TARGETS	|| return $?
+	(cd "$destdir" && $FIND "${PREFIX#/}" ! -type d) | $SORT | while read filename; do
+		#XXX inefficient
+		(cd "$destdir" &&
+			$DEBUG $TAR $tarargs "$target2" $taropts "$filename")
+		ret=$?
+		[ $ret -eq 0 ] || break
+		tarargs="-rf"
+	done
+	if [ $ret -eq 0 ]; then
+		$DEBUG $XZ -c "$target2" > "$target"
+		ret=$?
+	fi
+	$DEBUG $RM -r -- "$destdir" "$target2"
+	[ $ret -eq 0 ] || $RM -- "$target"
 	return $ret
 }
 
@@ -332,6 +354,7 @@ _target_sbom_pc()
 	#version
 	if [ "$version" = "git" -a -f "$PACKAGE-$VERSION/$PROJECTCONF" ]; then
 		v=$(_config_get "$PACKAGE-$VERSION/$PROJECTCONF" "" "version")
+		#TODO obtain the 7-character commit hash and mark if "dirty"
 		[ -n "$v" ] && version="$v+git"
 	fi
 
