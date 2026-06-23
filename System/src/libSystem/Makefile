@@ -13,7 +13,7 @@ MKDIR	= mkdir -m 0755 -p
 INSTALL	= install
 
 
-all: build configure download extract patch
+all: build
 
 build: configure
 	../script.sh -P "$(PREFIX)" -- "build"
