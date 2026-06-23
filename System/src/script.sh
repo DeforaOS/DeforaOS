@@ -301,6 +301,7 @@ _target_sbom()
 _target_sbom_jsonld()
 {
 	target="$1"
+	sbomdir="$LIBDIR/sbom"
 
 	#clean
 	if [ $clean -ne 0 ]; then
@@ -367,6 +368,7 @@ _sbom_pc_field()
 _target_sbom_spdx()
 {
 	target="$1"
+	sbomdir="$LIBDIR/sbom"
 
 	#clean
 	if [ $clean -ne 0 ]; then
