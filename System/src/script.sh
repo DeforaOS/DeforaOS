@@ -292,7 +292,6 @@ _target_sbom()
 	[ -n "$VENDOR" ] && name="$VENDOR-$name"
 	name=$(echo "$name" | $TR A-Z a-z)
 
-	_target_sbom_pc "$OBJDIR$name.pc"			|| return $?
 	_target_sbom_jsonld "$OBJDIR$name.jsonld" ||
 		_target_sbom_spdx "$OBJDIR$name.spdx"
 }
