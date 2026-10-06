@@ -56,7 +56,7 @@ TARGET_MACHINE=
 TARGET_SYSTEM=
 TOOLDIR=
 VENDOR="DeforaOS"
-VERBOSE=0
+VERBOSE=1
 
 #executables
 CAT="cat"
@@ -472,7 +472,7 @@ _install_do()
 #usage
 _usage()
 {
-	echo "Usage: $PROGNAME [-Dv][-O option=value...] target..." 1>&2
+	echo "Usage: $PROGNAME [-Dqv][-O option=value...] target..." 1>&2
 	echo "  -D	Run in debugging mode" 1>&2
 	echo "  -v	Verbose mode" 1>&2
 	echo "Targets:" 1>&2
@@ -504,13 +504,16 @@ _warning()
 #main
 umask 022
 #parse options
-while getopts "DvO:" name; do
+while getopts "DqvO:" name; do
 	case "$name" in
 		D)
 			DEBUG="_debug"
 			;;
+		q)
+			VERBOSE=0
+			;;
 		v)
-			VERBOSE=1
+			VERBOSE=$((VERBOSE + 1))
 			;;
 		O)
 			eval "${OPTARG%%=*}"="${OPTARG#*=}"
